@@ -7,5 +7,5 @@ node_modules
 .sass-cache
 content/*
 thumbs/*
-sites/accounts/*
+site/accounts/*
 material

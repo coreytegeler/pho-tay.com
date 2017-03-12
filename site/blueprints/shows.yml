@@ -18,7 +18,6 @@ fields:
           _title:
             label: Title
             type: text
-            required: true
             width: 1/2
           _date:
             icon: calendar
@@ -33,7 +32,6 @@ fields:
             type: selector
             mode: single
             types: image
-            required: true
             width: 1/2
           _link:
             label: Link

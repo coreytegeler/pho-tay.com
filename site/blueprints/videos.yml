@@ -18,7 +18,6 @@ fields:
           _title:
             label: Title
             type: text
-            required: true
             width: 1/2
           _date:
             icon: calendar
@@ -28,6 +27,11 @@ fields:
             placeholder: Select a date…
             default: today
             width: 1/2
+          _image:
+            label: Image
+            type: selector
+            mode: single
+            types: image
           _url:
             label: Link
             type: text
