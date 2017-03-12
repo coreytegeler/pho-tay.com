@@ -1,0 +1,2 @@
+body,html{background:#9abfd0;margin:auto}body,html,main{width:100%;height:100%;overflow-y:hidden;overflow-x:hidden;overflow:hidden}main{position:fixed;left:0;top:0}.gradient{width:100%;height:100%;position:absolute;left:0;top:0;background-size:cover;background-repeat:no-repeat;background-position:top;transition:opacity 1s ease-out}.gradient#fog{background-image:url(../img/fog.png);opacity:1}.gradient#sun{background-image:url(../img/sun1.svg);opacity:0}
+/*# sourceMappingURL=styles.css.map */

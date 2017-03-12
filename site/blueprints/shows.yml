@@ -1,0 +1,41 @@
+title: Shows
+
+pages: false
+
+fields:
+  title:
+    label: Title
+    type:  title
+    
+  things:
+    label: Shows
+    type: builder
+    fieldsets:
+      thing:
+        label: Show
+        snippet: builder/show
+        fields:
+          _title:
+            label: Title
+            type: text
+            required: true
+            width: 1/2
+          _date:
+            icon: calendar
+            label: Date
+            type: date
+            format: LL
+            placeholder: Select a date…
+            default: today
+            width: 1/2
+          _image:
+            label: Image
+            type: selector
+            mode: single
+            types: image
+            required: true
+            width: 1/2
+          _link:
+            label: Link
+            type: text
+            width: 1/2

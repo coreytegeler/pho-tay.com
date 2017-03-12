@@ -1,0 +1,49 @@
+title: Music
+
+pages: false
+
+fields:
+  title:
+    label: Title
+    type:  title
+    
+  things:
+    label: Releases
+    type: builder
+    fieldsets:
+      thing:
+        label: Release
+        snippet: builder/music
+        fields:
+          _title:
+            label: Title
+            type: text
+            required: true
+            width: 1/2
+          _date:
+            icon: calendar
+            label: Date
+            type: date
+            format: LL
+            placeholder: Select a date…
+            default: today
+            width: 1/2
+          _image:
+            label: Image
+            type: selector
+            mode: single
+            types: image
+            required: true
+          _link:
+            label: Link
+            type: text
+            width: 1/2
+          _type:
+            label: Type
+            type: select
+            default: release
+            options:
+              release: Release
+              remix: Remix
+              mix: Mix
+            width: 1/2

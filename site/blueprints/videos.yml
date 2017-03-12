@@ -1,0 +1,42 @@
+title: Videos
+
+pages: false
+
+fields:
+  title:
+    label: Title
+    type:  title
+    
+  things:
+    label: Videos
+    type: builder
+    fieldsets:
+      video:
+        label: Video
+        snippet: builder/video
+        fields:
+          _title:
+            label: Title
+            type: text
+            required: true
+            width: 1/2
+          _date:
+            icon: calendar
+            label: Date
+            type: date
+            format: LL
+            placeholder: Select a date…
+            default: today
+            width: 1/2
+          _url:
+            label: Link
+            type: text
+            width: 1/2
+          _type:
+            label: Type
+            type: select
+            default: music_video
+            options:
+              music_video: Music Video
+              live: Live
+            width: 1/2

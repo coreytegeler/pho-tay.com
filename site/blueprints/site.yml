@@ -1,0 +1,12 @@
+title: Site
+
+pages:
+  template:
+    - music
+    - videos
+    - shows
+
+fields:
+  title:
+    label: Title
+    type:  text
