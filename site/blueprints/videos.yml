@@ -13,7 +13,7 @@ fields:
     fieldsets:
       video:
         label: Video
-        snippet: builder/video
+        snippet: builder/thing
         fields:
           _title:
             label: Title

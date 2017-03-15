@@ -13,7 +13,7 @@ fields:
     fieldsets:
       thing:
         label: Release
-        snippet: builder/music
+        snippet: builder/thing
         fields:
           _title:
             label: Title

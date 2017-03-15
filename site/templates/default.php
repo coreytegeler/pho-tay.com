@@ -1,8 +1,8 @@
 <?php snippet('header') ?>
 
   <main>
-	  <div class="gradient" id="fog"></div>
-	  <div class="gradient" id="sun"></div>
+	  <?php snippet('home') ?>
+	  <?php snippet('music') ?>
   </main>
 
 <?php snippet('footer') ?>

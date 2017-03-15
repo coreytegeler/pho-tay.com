@@ -1,17 +1,23 @@
 (function() {
   $(function() {
-    var $main, $window, lastY;
+    var $main, $window;
     $window = $(window);
     $main = $('main');
-    lastY = 0;
-    return $window.on('mousewheel', function(e) {
-      var opacity, thisY;
-      thisY = lastY - e.deltaY;
-      opacity = thisY / 10000;
-      console.log(1 - opacity, opacity);
-      $('#fog').css('opacity', 1 - opacity);
-      $('#sun').css('opacity', opacity);
-      return lastY = thisY;
+    Marquee3k({
+      selector: '.marquee'
+    });
+    return $main.on('mousemove', function(e) {
+      var mouseY, opacity, winH;
+      mouseY = e.offsetY;
+      winH = $(window).innerHeight() / 4;
+      opacity = mouseY / winH;
+      if (opacity <= 0) {
+        opacity = 0;
+      } else if (opacity >= 1) {
+        opacity = 1;
+      }
+      $('#fog').css('opacity', opacity);
+      return $('#sun').css('opacity', 1 - opacity);
     });
   });
 
