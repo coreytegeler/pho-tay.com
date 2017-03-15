@@ -6,11 +6,9 @@ fields:
   title:
     label: Title
     type:  text
+  background:
+    label: Background
+    type: selector
+    mode: single
+    types: image
 
-  intro:
-    label: Intro
-    type:  textarea
-
-  text:
-    label: Text
-    type:  textarea

@@ -7,5 +7,6 @@ email: coreytegeler@gmail.com
 language: en
 role: admin
 history:
+  - home
   - music
   - videos

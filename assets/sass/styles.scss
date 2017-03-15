@@ -4,15 +4,15 @@ $light: #9abfd0;
 html, body {
 	width: 100%;
 	height: 100%;
-	background: $light;
 	margin: auto;
 	overflow-y: hidden;
 	overflow-x: hidden;
 	overflow: hidden;
 	font-family: 'Archivo Narrow', sans-serif;
+	background-color: $light;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-image: url(../img/trees.jpg);
+	font-size: 13px;
 }
 main {
 	width: 100%;

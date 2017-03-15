@@ -17,4 +17,5 @@
   ?>
 
 </head>
-<body>
+<?php $background = page('home')->image( page('home')->background() ) ?>
+<body style="background-image:url(<?= ( $background ? $background->url() : '' ) ?>)">
