@@ -2,6 +2,7 @@
 
   <main>
 	  <?php snippet('home') ?>
+	  <?php snippet('nav') ?>
 	  <?php snippet('music') ?>
   </main>
 

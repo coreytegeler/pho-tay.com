@@ -52,9 +52,54 @@ h2 {
 #home {
 	width: calc(100% - 8vw);
 	height: calc(100% - 8vw);
-	border: 4vw solid #e8cf64;
+	border: calc(4vw + 1px) solid #e8cf64;
 	position: relative;
 	overflow: hidden;
+}
+nav {
+	width: 100%;
+	// border: calc(4vw + 1px) solid #e8cf64;
+	border-top: none;
+	display: flex;
+	align-items: center;
+	a {
+		width: calc(25% - 4vw);
+		padding: calc(2vw + .6em) 2vw 2vw 2vw;
+		text-decoration: none;
+		h1 {
+			text-align: center;
+			color: #e8cf64;
+			text-transform: uppercase;
+		}
+		&:first-child h1 {
+			padding-left: 0;
+		}
+		&:last-child h1 {
+			padding-right: 0;	
+		}
+		&:nth-child(3n+1) {
+			background: #5eb786;
+			&:hover h1 {
+				color: #5eb786;
+			}
+		}
+		&:nth-child(3n+2) {
+			background: #196acc;
+			&:hover h1 {
+				color: #196acc;
+			}
+			
+		}
+		&:nth-child(3n+3) {
+			background: #af5b9f;
+			&:hover h1 {
+				color: #af5b9f;
+			}
+		}
+		&:hover {
+			background-color: #e8cf64;
+		}
+	}
 }
 #releases {
 	display: flex;
@@ -144,12 +189,13 @@ h2 {
 				padding: 0;
 			}
 			h1 {
+				font-size: 6em;
 				width: 400% !important;
 				overflow: visible;
 				text-transform: uppercase;
 				text-align: center;
 				transform: rotate(-45deg);
-				transform-origin: left top;
+				transform-origin: left center;
 				padding: .2em 0
 			}
 		}
@@ -172,7 +218,7 @@ h2 {
 		z-index: 2;
 	}
 	&#sun {
-		background-image: url(../img/sun1.svg);
+		background-image: url(../img/sun.png);
 		opacity: 0;
 		z-index: 2;
 	}
