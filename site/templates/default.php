@@ -1,8 +1,7 @@
 <?php snippet('header') ?>
-
-  <main>
-	  <?php snippet('home') ?>
-	  <?php snippet('nav') ?>
+	<?php snippet('home') ?>
+	<main>
+	  <?#php snippet('nav') ?>
 	  <?php snippet('music') ?>
   </main>
 
