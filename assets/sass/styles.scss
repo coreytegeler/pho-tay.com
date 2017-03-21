@@ -65,10 +65,14 @@ h2 {
 			pointer-events: none;
 			display: flex;
 			align-items: center;
+			transition: opacity 300ms ease-out;
 			svg {
 				width: 25vw;
 				display: table;
 				margin: auto;
+			}
+			&.hidden {
+				opacity: 0.1;
 			}
 		}
 		&#seasonal {
@@ -141,7 +145,7 @@ section {
 			img {
 				width: 100%;
 		    filter: grayscale(1);
-		    transition: filter 200ms ease-out, opacity 200ms ease-out;
+		    transition: filter 300ms ease-out, opacity 300ms ease-out;
 			}
 			&:hover {
 				cursor: pointer;
@@ -156,7 +160,7 @@ section {
 			flex-grow: 1;
 			align-content: center;
 			opacity: 0;
-			transition: opacity 200ms ease-out;
+			transition: opacity 300ms ease-out;
 			h2 {
 				width: 100%;
 				display: table;

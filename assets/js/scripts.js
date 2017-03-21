@@ -16,6 +16,7 @@
         image = new Image;
         image.src = imageUrl;
         return $(image).on('load', function(image) {
+          console.log(image.target.src);
           $bg.css({
             'backgroundImage': 'url(' + image.target.src + ')'
           });
@@ -63,6 +64,7 @@
       var $thing;
       $thing = $(this).parents('.thing');
       $thing.addClass('selected');
+      $('.scene.show .logo').addClass('hidden');
       return $thing.parents('section').find('.thing').each(function() {
         if (!$(this).is($thing)) {
           return $(this).addClass('hidden');
@@ -73,6 +75,7 @@
       var $thing;
       $thing = $(this).parents('.thing');
       $thing.removeClass('selected');
+      $('.scene.show .logo').removeClass('hidden');
       return $thing.parents('section').find('.thing').each(function() {
         return $(this).removeClass('hidden');
       });

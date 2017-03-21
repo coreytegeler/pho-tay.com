@@ -14,6 +14,7 @@ $ ->
 			image = new Image
 			image.src = imageUrl
 			$(image).on 'load', (image) ->
+				console.log image.target.src
 				$bg.css
 					'backgroundImage': 'url('+image.target.src+')'
 				if($scene.is(':first-child'))
@@ -50,6 +51,7 @@ $ ->
 	$('.thing .image img').on 'mouseenter', (e) ->
 		$thing = $(this).parents('.thing')
 		$thing.addClass('selected')
+		$('.scene.show .logo').addClass('hidden')
 		$thing.parents('section').find('.thing').each () ->
 			if(!$(this).is($thing))
 				$(this).addClass('hidden')
@@ -57,6 +59,7 @@ $ ->
 	$('.thing .image img').on 'mouseleave', (e) ->
 		$thing = $(this).parents('.thing')
 		$thing.removeClass('selected')
+		$('.scene.show .logo').removeClass('hidden')
 		$thing.parents('section').find('.thing').each () ->
 			$(this).removeClass('hidden')
 
