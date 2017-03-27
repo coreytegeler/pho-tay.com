@@ -7,6 +7,9 @@ email: coreytegeler@gmail.com
 language: en
 role: admin
 history:
+  - >
+    shows/odesza-photay-red-rocks-amphitheatre-co
+  - videos/monday
+  - music/sadie-ep
+  - music/onism
   - home
-  - music
-  - videos

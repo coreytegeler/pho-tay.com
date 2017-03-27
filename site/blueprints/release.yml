@@ -1,0 +1,67 @@
+title: Release
+
+pages: false
+
+fields:
+  title:
+    label: Title
+    type:  title
+  title:
+    label: Title
+    type: text
+    width: 1/2
+  date:
+    icon: calendar
+    label: Date
+    type: date
+    format: LL
+    placeholder: Select a date…
+    default: today
+    width: 1/2
+  art:
+    label: Artwork
+    type: selector
+    mode: single
+    types: image
+  featured:
+    label: Featured
+    type: toggle
+    text: yes/no
+    default: no
+    width: 1/2
+  featured_label:
+    label: Featured Label
+    type: text
+    width: 1/2
+  link:
+    label: Link
+    type: text
+    width: 1/2
+  type:
+    label: Type
+    type: select
+    default: release
+    options:
+      release: Release
+      remix: Remix
+      mix: Mix
+    width: 1/2
+  about:
+    label: About
+    type: wysiwyg
+  tracks:
+    label: Tracks
+    type: builder
+    fieldsets:
+      track:
+        label: Track
+        # snippet: builder/track
+        fields:
+          _title:
+            label: Title
+            type: text
+            width: 1/2
+          _length:
+            label: Length
+            type: text
+            width: 1/2

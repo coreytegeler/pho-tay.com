@@ -6,6 +6,7 @@ pages:
     - music
     - videos
     - shows
+    - posts
 
 fields:
   title:

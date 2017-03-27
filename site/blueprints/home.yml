@@ -6,9 +6,9 @@ fields:
   title:
     label: Title
     type:  text
-  background:
-    label: Background
+  backgrounds:
+    label: Backgrounds
     type: selector
-    mode: single
+    mode: multiple
     types: image
 

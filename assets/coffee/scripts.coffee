@@ -1,66 +1,110 @@
 $ ->
 	$window = $(window)
+	$body = $('body')
 	$main = $('main')
 	$home = $('#home')
-	$scenes = $('#scenes')
+	$follow = $('.follow')
+	$logo = $('#logo')
 
 	Marquee3k
 		selector: '.marquee'
 
-	$('.scene').each (i, scene) ->
-		$scene = $(scene)
-		$bg = $scene.find('.bg')
-		if $bg.length && imageUrl = $bg.data('image')
+	$('.bg').each (i, bg) ->
+		$bg = $(bg)
+		if imgUrl = $bg.data('image')
 			image = new Image
-			image.src = imageUrl
+			image.src = imgUrl
 			$(image).on 'load', (image) ->
-				console.log image.target.src
 				$bg.css
 					'backgroundImage': 'url('+image.target.src+')'
-				if($scene.is(':first-child'))
-					$scene.addClass('show')
+				if(i == 0)
+					$bg.addClass('show')
+
+	time = 5000
+	setInterval () ->
+		width = window.innerWidth;
+		height = window.innerHeight;
+		x = (Math.floor((Math.random() * 3) + 1)) * (Math.round(Math.random()) * 2 - 1);
+		y = (Math.floor((Math.random() * 3) + 1)) * (Math.round(Math.random()) * 2 - 1);
+		z = (Math.floor((Math.random() * 3) + 1)) * (Math.round(Math.random()) * 2 - 1);
+		$logo.transition
+			x:x,
+			y:y,
+			rotate:z
+		, time
+	, time
 	
-	$scenes.on 'mousemove', (e) ->
-		mouseY = e.offsetY
-		mouseX = e.offsetX
+	$window.on 'mousemove', (e) ->
+		mouseY = e.clientY
+		mouseX = e.clientX
 		winH = $(window).innerHeight()
-		$curScene = $('.scene.show')
-		curId = $curScene.attr('id')
-		if curId == 'seasonal'
-			opacity = mouseY/winH
-			if opacity <= 0
-				opacity = 0
-			else if opacity >= 1
-				opacity = 1
-			$('#fog').css('opacity', 1-opacity)
-			$('#sun').css('opacity', opacity)
-		else if curId == 'gazing'
-			$scope = $curScene.find('.scope')
-			$scope.css
-				x: mouseX,
-				y: mouseY
+		$follow.css
+			x: mouseX,
+			y: mouseY
 
-	$scenes.on 'click', (e) ->
-		$curScene = $('.scene.show')
-		$nextScene = $curScene.next()
-		if !$nextScene.length
-			$nextScene = $('.scene').first()	
-		$curScene.removeClass('show')
-		$nextScene.addClass('show')
+	changePhoto = (e) ->
+		$curPhoto = $('.bg.show')
+		$nextPhoto = $curPhoto.next()
+		if !$nextPhoto.length || !$nextPhoto.is('.bg')
+			$nextPhoto = $('.bg').first()	
+		$curPhoto.removeClass('show')
+		$nextPhoto.addClass('show')
+		$('.thing.opened').each (i, thing) ->
+			$(thing).removeClass('opened')
+			unhoverThing($(thing))
 
-	$('.thing .image img').on 'mouseenter', (e) ->
-		$thing = $(this).parents('.thing')
-		$thing.addClass('selected')
-		$('.scene.show .logo').addClass('hidden')
-		$thing.parents('section').find('.thing').each () ->
-			if(!$(this).is($thing))
-				$(this).addClass('hidden')
+	toggleThing = (e) ->
+		e.preventDefault()
+		$target = $(e.target)
+		$thing = $target.parents('.thing')
+		$more = $thing.find('.more')
+		$inner = $more.find('.inner')
+		if !$thing.is('.opened')
+			hoverThing($thing)
+			$thing.addClass('opened')
+			# $more.css('height', $inner.innerHeight())
+		else
+			$thing.removeClass('opened')
+			unhoverThing($thing)
+			$more.css('height', '')
 
-	$('.thing .image img').on 'mouseleave', (e) ->
-		$thing = $(this).parents('.thing')
-		$thing.removeClass('selected')
-		$('.scene.show .logo').removeClass('hidden')
-		$thing.parents('section').find('.thing').each () ->
-			$(this).removeClass('hidden')
+	hoverThing = (x) ->
+		if($(x).is('.thing'))
+			$thing = $(x)
+		else
+			$target = $(x.target)
+			$thing = $target.parents('.thing')
+		$siblings = $thing.parents('section').find('.thing')
+		if $thing.is('.opened') || $siblings.filter('.opened').length
+			return
+		$thing.addClass('hover').removeClass('hidden')
+		$('.hide').addClass('hidden')
+		$siblings.each (i, elem) ->
+			if(!$(elem).is($thing) && !$(elem).is('.hover'))
+				setTimeout () ->
+					$(elem).addClass('hidden')
+				, i*10
+
+	unhoverThing = (x) ->
+		if($(x).is('.thing'))
+			$thing = $(x)
+		else
+			$target = $(x.target)
+			$thing = $target.parents('.thing')
+		$siblings = $thing.parents('section').find('.thing')
+		if $thing.is('.opened') || $siblings.filter('.opened').length
+			return
+		$thing.removeClass('hover')
+		if(!$('.thing.hover').length)
+			$('.hide').removeClass('hidden')
+			$siblings.each (i, elem) ->
+				setTimeout () ->
+					$(elem).removeClass('hidden')
+				, i*10
+
+	$('.thing .hover').on 'mouseenter', hoverThing
+	$('.thing .hover').on 'mouseleave', unhoverThing
+	$('.thing a.open').on 'click', toggleThing
+	$('#photos').on 'click', changePhoto
 
 	return

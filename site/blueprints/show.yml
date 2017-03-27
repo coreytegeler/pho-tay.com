@@ -1,0 +1,25 @@
+title: Show
+
+pages: false
+
+fields:
+  title:
+    label: Title
+    type: text
+  date:
+    icon: calendar
+    label: Date
+    type: date
+    format: LL
+    placeholder: Select a date…
+    default: today
+    width: 1/2
+  link:
+    label: Link
+    type: text
+    width: 1/2
+  image:
+    label: Image
+    type: selector
+    mode: single
+    types: image

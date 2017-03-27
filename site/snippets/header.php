@@ -10,8 +10,7 @@
 
   <?php
   echo css('assets/css/styles.css?version=1.0');
-  echo js('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js');
-  echo js('https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js');
+  echo js('assets/js/jquery.js');
   echo js('assets/js/jquery.transit.js');
   echo js('assets/js/imagesloaded.pkgd.min.js');
   echo js('assets/js/marquee3k.min.js');

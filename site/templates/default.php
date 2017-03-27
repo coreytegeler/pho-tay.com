@@ -1,8 +1,12 @@
-<?php snippet('header') ?>
-	<?php snippet('home') ?>
+<?php snippet( 'header' ) ?>
+
+	<?php snippet( 'home' ) ?>
+
 	<main>
-	  <?#php snippet('nav') ?>
-	  <?php snippet('music') ?>
+	  <?php
+	  snippet( 'featured' );
+	  snippet( 'music' );
+	  ?>
   </main>
 
-<?php snippet('footer') ?>
+<?php snippet( 'footer' ) ?>
