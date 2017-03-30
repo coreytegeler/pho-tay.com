@@ -6,6 +6,7 @@ $ ->
 	$home = $('#home')
 	$photos = $('#photos')
 	$spotlight = $('.spotlight')
+	transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd'
 
 	$('.bg').each (i, bg) ->
 		$bg = $(bg)
@@ -96,14 +97,28 @@ $ ->
 	clickNavLink = (e) ->
 		e.preventDefault()
 		slug = $(this).attr('href').replace('#', '')
-		$.ajax
-			url: '/api?page='+slug
-			dataType: 'html'
-			error: (jqXHR, status, err) ->
-				console.log(jqXHR, status, err)
-			success: (response, status, jqXHR) ->
-				console.log response
-
+		$curSect = $main.find('section.show')
+		$nextSect = $('#'+slug)
+		if !$nextSect.is('.opened')
+			$curSect.removeClass 'show'
+			$nextSect.addClass 'opened'
+			$curSect.on transEnd, () ->
+				$curSect.addClass 'none'
+			$.ajax
+				url: '/api?page='+slug
+				dataType: 'html'
+				error: (jqXHR, status, err) ->
+					console.log(jqXHR, status, err)
+				success: (response, status, jqXHR) ->
+					$nextSect.append response
+					$nextSect.removeClass 'none'
+					$nextSect.addClass 'show'
+		else if !$curSect.is('#'+slug)
+			$curSect.removeClass 'show'
+			$curSect.on transEnd, () ->
+				$curSect.addClass 'none'
+				$nextSect.removeClass 'none'
+				$nextSect.addClass 'show'
 
 	hoverNavLink = () ->
 		$main.addClass('no-mix')
@@ -113,9 +128,9 @@ $ ->
 		$main.removeClass('no-mix')
 		$photos.removeClass('navigating')
 
-	$('.thing .hover').on 'mouseenter', hoverThing
-	$('.thing .hover').on 'mouseleave', unhoverThing
-	$('.thing a.open').on 'click', toggleThing
+	$main.on 'mouseenter', '.thing .hover', hoverThing
+	$main.on 'mouseleave', '.thing .hover', unhoverThing
+	$main.on 'click', '.thing a.open', toggleThing
 	$('#photos').on 'click', changePhoto
 	$('nav .button a').on 'click', clickNavLink
 	$('nav .button a').on 'mouseenter', hoverNavLink

@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var $body, $canvas, $home, $main, $nav, $photos, $spotlight, $window, canvas, changePhoto, clickNavLink, hoverNavLink, hoverThing, maskPaper, onScroll, resize, toggleThing, unhoverNavLink, unhoverThing;
+    var $body, $canvas, $home, $main, $nav, $photos, $spotlight, $window, canvas, changePhoto, clickNavLink, hoverNavLink, hoverThing, maskPaper, onScroll, resize, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $main = $('main');
@@ -8,6 +8,7 @@
     $home = $('#home');
     $photos = $('#photos');
     $spotlight = $('.spotlight');
+    transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd';
     $('.bg').each(function(i, bg) {
       var $bg, image, imgUrl;
       $bg = $(bg);
@@ -116,19 +117,37 @@
       }
     };
     clickNavLink = function(e) {
-      var slug;
+      var $curSect, $nextSect, slug;
       e.preventDefault();
       slug = $(this).attr('href').replace('#', '');
-      return $.ajax({
-        url: '/api?page=' + slug,
-        dataType: 'html',
-        error: function(jqXHR, status, err) {
-          return console.log(jqXHR, status, err);
-        },
-        success: function(response, status, jqXHR) {
-          return console.log(response);
-        }
-      });
+      $curSect = $main.find('section.show');
+      $nextSect = $('#' + slug);
+      if (!$nextSect.is('.opened')) {
+        $curSect.removeClass('show');
+        $nextSect.addClass('opened');
+        $curSect.on(transEnd, function() {
+          return $curSect.addClass('none');
+        });
+        return $.ajax({
+          url: '/api?page=' + slug,
+          dataType: 'html',
+          error: function(jqXHR, status, err) {
+            return console.log(jqXHR, status, err);
+          },
+          success: function(response, status, jqXHR) {
+            $nextSect.append(response);
+            $nextSect.removeClass('none');
+            return $nextSect.addClass('show');
+          }
+        });
+      } else if (!$curSect.is('#' + slug)) {
+        $curSect.removeClass('show');
+        return $curSect.on(transEnd, function() {
+          $curSect.addClass('none');
+          $nextSect.removeClass('none');
+          return $nextSect.addClass('show');
+        });
+      }
     };
     hoverNavLink = function() {
       $main.addClass('no-mix');
@@ -138,9 +157,9 @@
       $main.removeClass('no-mix');
       return $photos.removeClass('navigating');
     };
-    $('.thing .hover').on('mouseenter', hoverThing);
-    $('.thing .hover').on('mouseleave', unhoverThing);
-    $('.thing a.open').on('click', toggleThing);
+    $main.on('mouseenter', '.thing .hover', hoverThing);
+    $main.on('mouseleave', '.thing .hover', unhoverThing);
+    $main.on('click', '.thing a.open', toggleThing);
     $('#photos').on('click', changePhoto);
     $('nav .button a').on('click', clickNavLink);
     $('nav .button a').on('mouseenter', hoverNavLink);
