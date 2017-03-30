@@ -6,10 +6,6 @@ fields:
   title:
     label: Title
     type:  title
-  title:
-    label: Title
-    type: text
-    width: 1/2
   date:
     icon: calendar
     label: Date
@@ -18,11 +14,15 @@ fields:
     placeholder: Select a date…
     default: today
     width: 1/2
-  art:
-    label: Artwork
-    type: selector
-    mode: single
-    types: image
+  type:
+    label: Type
+    type: select
+    default: release
+    options:
+      album: Album
+      remix: Remix
+      mix: Mix
+    width: 1/2
   featured:
     label: Featured
     type: toggle
@@ -33,19 +33,11 @@ fields:
     label: Featured Label
     type: text
     width: 1/2
-  link:
-    label: Link
-    type: text
-    width: 1/2
-  type:
-    label: Type
-    type: select
-    default: release
-    options:
-      release: Release
-      remix: Remix
-      mix: Mix
-    width: 1/2
+  art:
+    label: Artwork
+    type: selector
+    mode: single
+    types: image
   about:
     label: About
     type: wysiwyg
@@ -55,7 +47,8 @@ fields:
     fieldsets:
       track:
         label: Track
-        # snippet: builder/track
+        entry: >
+          {{_title}}
         fields:
           _title:
             label: Title
@@ -63,5 +56,21 @@ fields:
             width: 1/2
           _length:
             label: Length
+            type: text
+            width: 1/2
+  links:
+    label: Links
+    type: builder
+    fieldsets:
+      track:
+        label: Link
+        # snippet: builder/track
+        fields:
+          _title:
+            label: Title
+            type: text
+            width: 1/2
+          _url:
+            label: URL
             type: text
             width: 1/2

@@ -1,6 +1,6 @@
-title: Videos
+title: API
 
-pages: video
+pages: false
 
 fields:
   title:

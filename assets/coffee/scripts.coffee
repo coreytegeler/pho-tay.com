@@ -2,12 +2,10 @@ $ ->
 	$window = $(window)
 	$body = $('body')
 	$main = $('main')
+	$nav = $('nav')
 	$home = $('#home')
-	$follow = $('.follow')
-	$logo = $('#logo')
-
-	Marquee3k
-		selector: '.marquee'
+	$photos = $('#photos')
+	$spotlight = $('.spotlight')
 
 	$('.bg').each (i, bg) ->
 		$bg = $(bg)
@@ -20,49 +18,47 @@ $ ->
 				if(i == 0)
 					$bg.addClass('show')
 
-	time = 5000
-	setInterval () ->
-		width = window.innerWidth;
-		height = window.innerHeight;
-		x = (Math.floor((Math.random() * 3) + 1)) * (Math.round(Math.random()) * 2 - 1);
-		y = (Math.floor((Math.random() * 3) + 1)) * (Math.round(Math.random()) * 2 - 1);
-		z = (Math.floor((Math.random() * 3) + 1)) * (Math.round(Math.random()) * 2 - 1);
-		$logo.transition
-			x:x,
-			y:y,
-			rotate:z
-		, time
-	, time
+	maskPaper = new (paper.PaperScope)
+	canvas = document.getElementById('canvas')
+	$canvas = $(canvas)
+
+	onScroll = (e) ->
+		if $('section.things').eq(0).offset().top - $window.scrollTop() <= 0
+			$nav.addClass('fixed')
+		else
+			$nav.removeClass('fixed')
 	
-	$window.on 'mousemove', (e) ->
-		mouseY = e.clientY
-		mouseX = e.clientX
-		winH = $(window).innerHeight()
-		$follow.css
-			x: mouseX,
-			y: mouseY
+	resize = () ->
+		$canvas.css
+			width: $window.innerWidth(),
+			height: $window.innerHeight()
 
 	changePhoto = (e) ->
-		$curPhoto = $('.bg.show')
+		$curPhoto = $('#photos .bg.show')
 		$nextPhoto = $curPhoto.next()
 		if !$nextPhoto.length || !$nextPhoto.is('.bg')
-			$nextPhoto = $('.bg').first()	
+			$nextPhoto = $('#photos .bg').first()	
 		$curPhoto.removeClass('show')
 		$nextPhoto.addClass('show')
 		$('.thing.opened').each (i, thing) ->
-			$(thing).removeClass('opened')
-			unhoverThing($(thing))
+			toggleThing(thing)
 
-	toggleThing = (e) ->
-		e.preventDefault()
-		$target = $(e.target)
-		$thing = $target.parents('.thing')
+	toggleThing = (x) ->
+		if($(x).is('.thing'))
+			$thing = $(x)
+		else
+			$target = $(x.target)
+			x.preventDefault()
+			$thing = $target.parents('.thing')
 		$more = $thing.find('.more')
 		$inner = $more.find('.inner')
+		console.log $more
 		if !$thing.is('.opened')
 			hoverThing($thing)
-			$thing.addClass('opened')
-			# $more.css('height', $inner.innerHeight())
+			if $inner.html().length
+				height = $inner.innerHeight()
+				$thing.addClass('opened')
+				$more.css('height', height)
 		else
 			$thing.removeClass('opened')
 			unhoverThing($thing)
@@ -79,11 +75,6 @@ $ ->
 			return
 		$thing.addClass('hover').removeClass('hidden')
 		$('.hide').addClass('hidden')
-		$siblings.each (i, elem) ->
-			if(!$(elem).is($thing) && !$(elem).is('.hover'))
-				setTimeout () ->
-					$(elem).addClass('hidden')
-				, i*10
 
 	unhoverThing = (x) ->
 		if($(x).is('.thing'))
@@ -102,9 +93,34 @@ $ ->
 					$(elem).removeClass('hidden')
 				, i*10
 
+	clickNavLink = (e) ->
+		e.preventDefault()
+		slug = $(this).attr('href').replace('#', '')
+		$.ajax
+			url: '/api?page='+slug
+			dataType: 'html'
+			error: (jqXHR, status, err) ->
+				console.log(jqXHR, status, err)
+			success: (response, status, jqXHR) ->
+				console.log response
+
+
+	hoverNavLink = () ->
+		$main.addClass('no-mix')
+		$photos.addClass('navigating')
+
+	unhoverNavLink = () ->
+		$main.removeClass('no-mix')
+		$photos.removeClass('navigating')
+
 	$('.thing .hover').on 'mouseenter', hoverThing
 	$('.thing .hover').on 'mouseleave', unhoverThing
 	$('.thing a.open').on 'click', toggleThing
 	$('#photos').on 'click', changePhoto
+	$('nav .button a').on 'click', clickNavLink
+	$('nav .button a').on 'mouseenter', hoverNavLink
+	$('nav .button a').on 'mouseleave', unhoverNavLink
+	$window.scroll(onScroll).scroll()
+	$window.resize(resize).resize()
 
 	return

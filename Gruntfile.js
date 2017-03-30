@@ -37,7 +37,8 @@ module.exports = function(grunt) {
 		coffee: {
 			compile: {
 				files: {
-					'assets/js/scripts.js': 'assets/coffee/scripts.coffee'
+					'assets/js/scripts.js': 'assets/coffee/scripts.coffee',
+					'assets/js/spotlight.js': 'assets/coffee/spotlight.coffee'
 				},
 				options: {
 					sourceMap: true
@@ -45,9 +46,13 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-			scripts: {
-				files: ['assets/sass/*.scss', 'assets/coffee/*.coffee'],
-				tasks: ['sass', 'postcss', 'coffee'],
+			css: {
+				files: ['assets/sass/*.scss'],
+				tasks: ['sass', 'postcss'],
+			},
+			js: {
+				files: ['assets/coffee/*.coffee'],
+				tasks: ['coffee'],
 			}
 		},
     php: {

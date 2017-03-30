@@ -10,23 +10,12 @@ if( sizeof( $features ) ){
 				}
 			}
 			$title = $featured->title();
-			$about = $featured->about()->kirbytext();
 			echo '<div class="image">';
 				echo '<a href="' . $featured->link() . '" class="release open">';
 					if( $image ) {
 						echo '<img src="' . $image->url() . '"/>';
 					}
 				echo '</a>';
-			echo '</div>';
-			echo '<div class="info">';
-				echo '<div class="center">';
-					echo '<h1>' . $title . '</h1>';
-					echo '<div class="more">';
-						echo '<div class="inner">';
-							echo $about;
-						echo '</div>';
-					echo '</div>';
-				echo '</div>';
 				echo '<div class="meta">';
 					echo '<div class="row">';
 						if( $featured_label = $featured->featured_label() ) {
@@ -36,6 +25,12 @@ if( sizeof( $features ) ){
 							echo '<span class="date">' . $date . '</span>';
 						}
 					echo '</div>';
+				echo '</div>';
+			echo '</div>';
+			echo '<div class="info">';
+				echo '<div class="center">';
+					echo '<h1>' . $title . '</h1>';
+					snippet( 'release_info', array( 'release' => $featured ) );
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';

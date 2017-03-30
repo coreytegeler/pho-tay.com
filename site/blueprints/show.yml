@@ -18,8 +18,8 @@ fields:
     label: Link
     type: text
     width: 1/2
-  image:
-    label: Image
+  flier:
+    label: Flier
     type: selector
     mode: single
     types: image

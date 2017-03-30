@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,700,700i');
 $light: #fffefe;
+$ease: cubic-bezier(0.645, 0.045, 0.355, 1.000);
 html, body {
 	width: 100%;
 	margin: auto;
-	overflow: hidden;
-	overflow-y: auto;
 	overflow-x: hidden;
 	font-family: 'Archivo Narrow', sans-serif;
 	background-color: black;
@@ -20,12 +19,17 @@ h1 {
 	margin: 0;
 }
 h2 {
-	font-size: 2.5em;
+	font-size: 4em;
 	line-height: 1.2em;
 	margin: 0;
 }
 h3 {
-	font-size: 1.5em;
+	font-size: 2.5em;
+	line-height: 1.2em;
+	margin: 0;
+}
+h4 {
+	font-size: 1.8em;
 	line-height: 1.2em;
 	margin: 0;
 }
@@ -36,55 +40,12 @@ a {
 		pointer-events: auto;
 	}
 }
-.follow {
-	width: 300vw;
-	height: 300vh;
-	position: fixed;
-	left: -150vw;
-	top: -150vh;
-	transform: translate3d(50vw, 50vh, 0);
-	transition: transform 100ms ease-out;
-	display: flex;
-	align-content: center;
-}
-.bg {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 0;
-	top: 0;
-	opacity: 0;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
-	transition: opacity 1000ms ease-in-out;
-	&.show {
-		opacity: 1;
-	}
-}
 #home {
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 101vh;
 	z-index: 100;
 	overflow: hidden;
 	pointer-events: none;
-	#photos {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		left: 0;
-		top: 0;
-		cursor: pointer;
-		pointer-events: auto;
-	}
-	
-	.scope {
-		z-index: 102;
-		background-image: url(../img/scope.png);
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: cover;
-	}
 	#logo {
 		width: 100%;
 		height: 100%;
@@ -96,6 +57,7 @@ a {
 		pointer-events: none;
 		display: flex;
 		align-items: center;
+		opacity: 0;
 		svg {
 			width: 10vw;
 			display: table;
@@ -103,27 +65,186 @@ a {
 			fill: $light;
 		}
 	}
+	#photos {
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		left: 0;
+		top: 0;
+		cursor: pointer;
+		pointer-events: auto;
+		.bg {
+			width: 110%;
+			height: 110%;
+			position: absolute;
+			left: -5%;
+			top: -5%;
+			opacity: 0;
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-position: center;
+			transition: opacity 100ms $ease;
+			&.show {
+				opacity: 1;
+			}
+			&.hide {
+				opacity: 0 !important;
+			}
+		}
+		&.navigating {
+			background-color: $light;
+			.bg {
+				opacity: 0 !important;
+			}
+		}
+	}
+	.spotlight {
+		width: 300vw;
+		height: 300vh;
+		position: fixed;
+		left: -150vw;
+		top: -150vh;
+		transform: translate3d(50vw, 50vh, 0);
+		transition: transform 100ms ease-out;
+		display: flex;
+		align-content: center;
+		z-index: 102;
+		background-image: url(../img/spotlight.png);
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+	}
+	.mask {
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		left: 0;
+		top: 0;
+		mix-blend-mode: multiply;
+		canvas {
+			width: 100%;
+			height: 100%;
+			background-color: black;
+		}
+	}
 }
 main {
 	width: 100%;
 	height: 100%;
 	z-index: 200;
-	padding-top: 100vh;
-	padding-bottom: 25vh;
+	padding: 0 0 25vh 0;
 	pointer-events: none;
+	position: relative;
+	mix-blend-mode: lighten;
+	&.no-mix {
+		mix-blend-mode: normal;
+	}
+}
+nav {
+	width: 6vw;
+	height: 100vh;
+	position: absolute;
+	left: calc(50% - 3vw);
+  top: 0;
+  display: flex;
+  z-index: 1;
+  transform: rotate(180deg);
+	.inner {
+		width: calc(100vh - 1em);
+		height: 6vw;
+		position: absolute;
+		left: 0;
+    top: -6vw;
+		padding: 0 .5em;
+		display: flex;
+		flex-direction: row;
+    align-items: center;
+		transform: rotate(90deg);
+    transform-origin: left bottom;
+    mix-blend-mode: lighten;
+		.buttons {
+			display: flex;
+			margin: auto;
+			.button {
+				display: table;
+				margin: auto;
+				a {
+					display: table;
+					padding: .5em;
+			    pointer-events: all;
+					h3 {
+						color: $light;
+					}
+					&:hover {
+						cursor: pointer;
+						h3 {
+							cursor: pointer;
+							color: black;
+							// border-bottom: .15em solid $light;
+						}
+					}
+				}
+			}
+		}
+	}
+	&.fixed {
+		position: fixed;
+	}
 }
 .thing {
 	.more {
-		transition: height 600ms ease-in-out, padding-bottom 300ms 300ms ease-in-out;
-		pointer-events: auto;
+		height: 0;
+		transition: height 600ms $ease;
 		.inner {
-			transition: opacity 400ms 200ms ease-in-out;
+			transition: opacity 400ms 200ms $ease;
 			opacity: 0;
+			padding: 1em 0 25vh 0;
+			.about {
+				padding-bottom: 1em;
+				p {
+					margin-bottom: 1em;
+					&:last-child {
+						margin: 0;
+					}
+				}
+			}
+			ul, ol {
+				list-style: none;
+				padding: 0 0 1em 0;
+				margin: 0;
+			}
+			ul.links {
+				li {
+					display: inline-block;
+					padding-bottom: .5em;
+					margin: 0 .5em 0 0;
+					a {
+						padding: .5em;
+						background-color: white;
+						color: black;
+						border-radius: .5em;
+					}
+				}
+			}
+			ol.tracks {
+				li {
+					border-bottom: 2px solid #0086ff;
+					padding: .5em 0;
+					margin: 0;
+					.title {
+
+					}
+					.length {
+						margin-left: 1em;
+						opacity: .5;
+					}
+				}
+			}
 		}
 	}
 	&.opened {
 		.more {
-			padding-bottom: 25vh;
+			pointer-events: auto;
 			.inner {
 				opacity: 1;
 			}
@@ -139,10 +260,11 @@ section {
 			width: 100%;
 			display: flex;
 			.image {
-				width: 60%;
-				height: 100%;
+				width: 60vw;
+				height: 60vw;
 				background: black;
 				display: flex;
+				position: relative;
 				a.open {
 					width: 100%;
 					display: table;
@@ -169,13 +291,13 @@ section {
 				}
 			}
 			.meta {
-				width: 100vh;
+				width: 100%;
 				text-transform: uppercase;
 				display: flex;
 				align-items: center;
 				position: absolute;
-				left: 0;
-				top: 0;
+				left: 100%;
+		    top: -.7em;
 				transform-origin: left center;
 				transform: rotateZ(90deg);
 				.row {
@@ -189,7 +311,10 @@ section {
 			}
 		}
 	}
-	&#releases {
+	&.things {
+		width: 100%;
+		position: relative;
+		display: table;
 		.group {
 			position: relative;
 			// padding: 10vh 0;
@@ -200,19 +325,21 @@ section {
 		    position: absolute;
 		    left: 0;
 		    top: 0;
+		    display: none;
 		    h3 {
 		      text-align: center;
 			    text-transform: uppercase;
 			    margin: auto;
+			    letter-spacing: .3em;
 			  }
 			}
 			&:nth-child(odd) {
-				h3 {
+				.label h3 {
 					transform: rotate(-90deg);
 				}
 			}
-			&:nth-child(even) {
-				h3 {
+			&:nth-child(even) {ot
+				.label h3 {
 					transform: rotate(90deg);
 				}
 			}
@@ -222,15 +349,24 @@ section {
 			display: flex;
 			mix-blend-mode: luminosity;
 			.image {
-				width: calc(40vw);
+				width: 40vw;
+				transition: opacity 300ms ease-out;
 				a {
+					width: 30vw;
 					display: table;
+					margin: auto;
 				}
 				img {
 					width: 100%;
 			    filter: grayscale(1);
-			    transition: filter 300ms ease-out, opacity 300ms ease-out;
+			    transition: filter 300ms ease-out;
 			    pointer-events: auto;
+				}
+				&.no {
+					a {
+						border: .4em solid $light;
+						padding: .5em;
+					}
 				}
 			}
 			.info {
@@ -247,9 +383,8 @@ section {
 					width: 100%;
 					display: table;
 					margin: auto;
-			    h2 {
+			    h1 {
 			    	margin: 0;
-			    	font-size: 5em;
 			    	display: table;
 			    }
 				}
@@ -264,6 +399,7 @@ section {
 			&.hover {
 				mix-blend-mode: lighten;
 				z-index: 1000;
+				opacity: 1 !important;
 				.info {
 					position: relative;
 					opacity: 1;
@@ -275,18 +411,25 @@ section {
 					filter: grayscale(0);
 				}
 			}
-			&.hidden {
-				img {
+			&.hidden:not(.hover) {
+				.image {
 					opacity: 0.1;
 				}
 				.info {
 					opacity: 0;
 				}
 			}
-			&.odd {
+			&.even {
 				flex-direction: row;
-				.image a {
-					margin-left: 10vw;
+				.image {
+					a {
+						margin-left: 10vw;
+					}
+					&.no {
+						a {
+							margin-left: calc(10vw - 1.8em);
+						}
+					}
 				}
 				.info {
 					margin: auto;
@@ -298,12 +441,19 @@ section {
 					}
 				}
 			}
-			&.even {
+			&.odd {
 				flex-direction: row-reverse;
-				margin-top: -20vh;
-				.image a {
-					float: right;
-					margin-right: 10vw;
+				// margin-bottom: -10em;
+				.image {
+					a {
+						float: right;
+						margin-right: 10vw;
+					}
+					&.no {
+						a {
+							margin-right: calc(10vw - 1.8em);
+						}
+					}
 				}
 				.info {
 					margin: auto;
@@ -322,8 +472,10 @@ section {
 				}
 			}
 			&.large {
-				.image a {
-					margin: 0;
+				.image {
+					a {
+						margin: 0;
+					}
 				}
 			}
 		}
