@@ -7,6 +7,7 @@ $ ->
 	$photos = $('#photos')
 	$spotlight = $('.spotlight')
 	transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd'
+	ease = 'cubic-bezier(0.645, 0.045, 0.355, 1.000)'
 
 	$('.bg').each (i, bg) ->
 		$bg = $(bg)
@@ -98,27 +99,18 @@ $ ->
 		e.preventDefault()
 		slug = $(this).attr('href').replace('#', '')
 		$curSect = $main.find('section.show')
+		$curThings = $curSect.find('article.thing')
 		$nextSect = $('#'+slug)
-		if !$nextSect.is('.opened')
-			$curSect.removeClass 'show'
-			$nextSect.addClass 'opened'
-			$curSect.on transEnd, () ->
-				$curSect.addClass 'none'
-			$.ajax
-				url: '/api?page='+slug
-				dataType: 'html'
-				error: (jqXHR, status, err) ->
-					console.log(jqXHR, status, err)
-				success: (response, status, jqXHR) ->
-					$nextSect.append response
-					$nextSect.removeClass 'none'
-					$nextSect.addClass 'show'
-		else if !$curSect.is('#'+slug)
-			$curSect.removeClass 'show'
-			$curSect.on transEnd, () ->
-				$curSect.addClass 'none'
-				$nextSect.removeClass 'none'
-				$nextSect.addClass 'show'
+		if $nextSect.is('.show')
+			return
+		$curThings.each (i, thing) ->
+			$(this).removeClass('show')
+			if i == $curThings.length-1
+				$curSect.removeClass 'show'
+				if !$nextSect.is('.loaded')
+					loadSect(slug)
+				else
+					showSect(slug)		
 
 	hoverNavLink = () ->
 		$main.addClass('no-mix')
@@ -127,6 +119,26 @@ $ ->
 	unhoverNavLink = () ->
 		$main.removeClass('no-mix')
 		$photos.removeClass('navigating')
+
+	loadSect = (slug) ->
+		$sect = $('#'+slug)
+		$sect.addClass 'loaded'
+		$.ajax
+			url: '/api?page='+slug
+			dataType: 'html'
+			error: (jqXHR, status, err) ->
+				console.log(jqXHR, status, err)
+			success: (response, status, jqXHR) ->
+				$sect.append response
+				showSect(slug)
+
+	showSect = (slug) ->
+		$sect = $('#'+slug)
+		$sect.addClass 'show'
+		$sect.addClass 'loaded'
+		$sect.find('article.thing').each (i, thing) ->
+			$(thing).imagesLoaded () ->
+				$(thing).addClass('show')
 
 	$main.on 'mouseenter', '.thing .hover', hoverThing
 	$main.on 'mouseleave', '.thing .hover', unhoverThing
@@ -137,5 +149,6 @@ $ ->
 	$('nav .button a').on 'mouseleave', unhoverNavLink
 	$window.scroll(onScroll).scroll()
 	$window.resize(resize).resize()
+	showSect('music')
 
 	return

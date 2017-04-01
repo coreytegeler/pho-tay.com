@@ -137,9 +137,6 @@ main {
 	pointer-events: none;
 	position: relative;
 	mix-blend-mode: lighten;
-	section {
-		opacity: 0;
-	}
 	&.no-mix {
 		mix-blend-mode: normal;
 	}
@@ -319,7 +316,7 @@ section {
 	&.things {
 		width: 100%;
 		position: relative;
-		display: table;
+		display: none;
 		.group {
 			position: relative;
 			// padding: 10vh 0;
@@ -343,7 +340,7 @@ section {
 					transform: rotate(-90deg);
 				}
 			}
-			&:nth-child(even) {ot
+			&:nth-child(even) {
 				.label h3 {
 					transform: rotate(90deg);
 				}
@@ -353,6 +350,8 @@ section {
 			width: 100%;
 			display: flex;
 			mix-blend-mode: luminosity;
+			transition: opacity 500ms $ease;
+			opacity: 0;
 			.image {
 				width: 40vw;
 				transition: opacity 300ms $ease;
@@ -398,8 +397,8 @@ section {
 					width: 100%;
 				}
 			}
-			&.opened {
-
+			&.show {
+				opacity: 1;
 			}
 			&.hover {
 				mix-blend-mode: lighten;
@@ -484,12 +483,9 @@ section {
 				}
 			}
 		}
-	}
-	&.show {
-		opacity: 1;
-	}
-	&.none {
-		display: none;
+		&.show {
+			display: table;
+		}
 	}
 }
 .hide {

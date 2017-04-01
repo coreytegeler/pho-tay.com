@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var $body, $canvas, $home, $main, $nav, $photos, $spotlight, $window, canvas, changePhoto, clickNavLink, hoverNavLink, hoverThing, maskPaper, onScroll, resize, toggleThing, transEnd, unhoverNavLink, unhoverThing;
+    var $body, $canvas, $home, $main, $nav, $photos, $spotlight, $window, canvas, changePhoto, clickNavLink, ease, hoverNavLink, hoverThing, loadSect, maskPaper, onScroll, resize, showSect, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $main = $('main');
@@ -9,6 +9,7 @@
     $photos = $('#photos');
     $spotlight = $('.spotlight');
     transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd';
+    ease = 'cubic-bezier(0.645, 0.045, 0.355, 1.000)';
     $('.bg').each(function(i, bg) {
       var $bg, image, imgUrl;
       $bg = $(bg);
@@ -117,37 +118,26 @@
       }
     };
     clickNavLink = function(e) {
-      var $curSect, $nextSect, slug;
+      var $curSect, $curThings, $nextSect, slug;
       e.preventDefault();
       slug = $(this).attr('href').replace('#', '');
       $curSect = $main.find('section.show');
+      $curThings = $curSect.find('article.thing');
       $nextSect = $('#' + slug);
-      if (!$nextSect.is('.opened')) {
-        $curSect.removeClass('show');
-        $nextSect.addClass('opened');
-        $curSect.on(transEnd, function() {
-          return $curSect.addClass('none');
-        });
-        return $.ajax({
-          url: '/api?page=' + slug,
-          dataType: 'html',
-          error: function(jqXHR, status, err) {
-            return console.log(jqXHR, status, err);
-          },
-          success: function(response, status, jqXHR) {
-            $nextSect.append(response);
-            $nextSect.removeClass('none');
-            return $nextSect.addClass('show');
-          }
-        });
-      } else if (!$curSect.is('#' + slug)) {
-        $curSect.removeClass('show');
-        return $curSect.on(transEnd, function() {
-          $curSect.addClass('none');
-          $nextSect.removeClass('none');
-          return $nextSect.addClass('show');
-        });
+      if ($nextSect.is('.show')) {
+        return;
       }
+      return $curThings.each(function(i, thing) {
+        $(this).removeClass('show');
+        if (i === $curThings.length - 1) {
+          $curSect.removeClass('show');
+          if (!$nextSect.is('.loaded')) {
+            return loadSect(slug);
+          } else {
+            return showSect(slug);
+          }
+        }
+      });
     };
     hoverNavLink = function() {
       $main.addClass('no-mix');
@@ -156,6 +146,33 @@
     unhoverNavLink = function() {
       $main.removeClass('no-mix');
       return $photos.removeClass('navigating');
+    };
+    loadSect = function(slug) {
+      var $sect;
+      $sect = $('#' + slug);
+      $sect.addClass('loaded');
+      return $.ajax({
+        url: '/api?page=' + slug,
+        dataType: 'html',
+        error: function(jqXHR, status, err) {
+          return console.log(jqXHR, status, err);
+        },
+        success: function(response, status, jqXHR) {
+          $sect.append(response);
+          return showSect(slug);
+        }
+      });
+    };
+    showSect = function(slug) {
+      var $sect;
+      $sect = $('#' + slug);
+      $sect.addClass('show');
+      $sect.addClass('loaded');
+      return $sect.find('article.thing').each(function(i, thing) {
+        return $(thing).imagesLoaded(function() {
+          return $(thing).addClass('show');
+        });
+      });
     };
     $main.on('mouseenter', '.thing .hover', hoverThing);
     $main.on('mouseleave', '.thing .hover', unhoverThing);
@@ -166,6 +183,7 @@
     $('nav .button a').on('mouseleave', unhoverNavLink);
     $window.scroll(onScroll).scroll();
     $window.resize(resize).resize();
+    showSect('music');
   });
 
 }).call(this);

@@ -6,7 +6,7 @@ snippet( 'header' );
 		snippet( 'nav' );
 		$pages = array( 'music', 'shows', 'videos', 'posts' );
 		foreach( $pages as $index => $page ) {
-			echo '<section class="things ' . ( $index == 0 ? 'opened show' : 'none' ) . '" id="' . $page . '">';
+			echo '<section class="things" id="' . $page . '">';
 				if( $index == 0 ) {
 					snippet( $page );
 				}

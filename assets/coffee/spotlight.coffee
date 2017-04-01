@@ -39,4 +39,3 @@ view.onFrame = (event) ->
 view.onResize = (event) ->
 	if logo = project.getItem({name:'logo'})
 		logo.position.x = view.center.x
-		console.log spotlight

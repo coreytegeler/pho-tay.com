@@ -52,8 +52,7 @@
     if (logo = project.getItem({
       name: 'logo'
     })) {
-      logo.position.x = view.center.x;
-      return console.log(spotlight);
+      return logo.position.x = view.center.x;
     }
   };
 
