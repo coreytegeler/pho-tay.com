@@ -25,7 +25,7 @@ $ ->
 	$canvas = $(canvas)
 
 	onScroll = (e) ->
-		if $('section.things').eq(0).offset().top - $window.scrollTop() <= 0
+		if $main.offset().top - $window.scrollTop() <= 0
 			$nav.addClass('fixed')
 		else
 			$nav.removeClass('fixed')
@@ -103,14 +103,13 @@ $ ->
 		$nextSect = $('#'+slug)
 		if $nextSect.is('.show')
 			return
-		$curThings.each (i, thing) ->
-			$(this).removeClass('show')
-			if i == $curThings.length-1
-				$curSect.removeClass 'show'
-				if !$nextSect.is('.loaded')
-					loadSect(slug)
-				else
-					showSect(slug)		
+		$curThings.removeClass('show')
+		setTimeout () ->
+			if !$nextSect.is('.loaded')
+				loadSect(slug)
+			else
+				showSect(slug)
+		, 500
 
 	hoverNavLink = () ->
 		$main.addClass('no-mix')

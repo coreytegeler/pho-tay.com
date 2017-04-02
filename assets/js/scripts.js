@@ -30,7 +30,7 @@
     canvas = document.getElementById('canvas');
     $canvas = $(canvas);
     onScroll = function(e) {
-      if ($('section.things').eq(0).offset().top - $window.scrollTop() <= 0) {
+      if ($main.offset().top - $window.scrollTop() <= 0) {
         return $nav.addClass('fixed');
       } else {
         return $nav.removeClass('fixed');
@@ -127,17 +127,14 @@
       if ($nextSect.is('.show')) {
         return;
       }
-      return $curThings.each(function(i, thing) {
-        $(this).removeClass('show');
-        if (i === $curThings.length - 1) {
-          $curSect.removeClass('show');
-          if (!$nextSect.is('.loaded')) {
-            return loadSect(slug);
-          } else {
-            return showSect(slug);
-          }
+      $curThings.removeClass('show');
+      return setTimeout(function() {
+        if (!$nextSect.is('.loaded')) {
+          return loadSect(slug);
+        } else {
+          return showSect(slug);
         }
-      });
+      }, 500);
     };
     hoverNavLink = function() {
       $main.addClass('no-mix');
