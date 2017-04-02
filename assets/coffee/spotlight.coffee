@@ -12,7 +12,6 @@ spotlight.name = 'spotlight'
 spotlight.center = mousePoint
 spotlight.fillColor = 'white'
 root = $('body').data('root')
-console.log root+'/assets/img/logo.svg'
 project.importSVG root+'/assets/img/logo.svg', (logo) ->
 	logo.name = 'logo'
 	logo.position = view.center

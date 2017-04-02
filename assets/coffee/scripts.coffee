@@ -106,6 +106,7 @@ $ ->
 			return
 		$curThings.removeClass('show')
 		setTimeout () ->
+			$curSect.removeClass('show')
 			if !$nextSect.is('.loaded')
 				loadSect(slug)
 			else
@@ -123,7 +124,6 @@ $ ->
 	loadSect = (slug) ->
 		$sect = $('#'+slug)
 		$sect.addClass 'loaded'
-		console.log root+'/api?page='+slug
 		$.ajax
 			url: root+'/api?page='+slug
 			dataType: 'html'

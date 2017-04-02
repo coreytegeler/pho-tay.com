@@ -12,7 +12,6 @@ echo '<section id="home">';
 	  }
 		echo '<div class="mask">';
 			echo '<canvas id="canvas" resize></canvas>';
-			echo '<img src="/assets/img/spotlight.png" id="spotlightRaster"/>';
 		echo '</div>';
   echo '</div>';
 echo '</section>';
