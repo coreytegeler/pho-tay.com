@@ -149,6 +149,7 @@
       var $sect;
       $sect = $('#' + slug);
       $sect.addClass('loaded');
+      console.log(root + '/api?page=' + slug);
       return $.ajax({
         url: root + '/api?page=' + slug,
         dataType: 'html',

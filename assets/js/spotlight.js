@@ -17,7 +17,7 @@
 
   root = $('body').data('root');
 
-  console.log(root);
+  console.log(root + '/assets/img/logo.svg');
 
   project.importSVG(root + '/assets/img/logo.svg', function(logo) {
     logo.name = 'logo';
