@@ -1,5 +1,5 @@
 (function() {
-  var logoTop, mousePoint, slWidth, spotlight;
+  var logoTop, mousePoint, root, slWidth, spotlight;
 
   mousePoint = view.center;
 
@@ -15,7 +15,11 @@
 
   spotlight.fillColor = 'white';
 
-  project.importSVG('/assets/img/logo.svg', function(logo) {
+  root = $('body').data('root');
+
+  console.log(root);
+
+  project.importSVG(root + '/assets/img/logo.svg', function(logo) {
     logo.name = 'logo';
     logo.position = view.center;
     logo.fillColor = 'white';

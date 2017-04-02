@@ -6,6 +6,7 @@ $ ->
 	$home = $('#home')
 	$photos = $('#photos')
 	$spotlight = $('.spotlight')
+	root = $body.data('root')
 	transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd'
 	ease = 'cubic-bezier(0.645, 0.045, 0.355, 1.000)'
 
@@ -123,7 +124,7 @@ $ ->
 		$sect = $('#'+slug)
 		$sect.addClass 'loaded'
 		$.ajax
-			url: '/api?page='+slug
+			url: root+'/api?page='+slug
 			dataType: 'html'
 			error: (jqXHR, status, err) ->
 				console.log(jqXHR, status, err)

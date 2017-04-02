@@ -11,8 +11,9 @@ spotlight = new Path.Circle(mousePoint, slWidth)
 spotlight.name = 'spotlight'
 spotlight.center = mousePoint
 spotlight.fillColor = 'white'
-
-project.importSVG '/assets/img/logo.svg', (logo) ->
+root = $('body').data('root')
+console.log root
+project.importSVG root+'/assets/img/logo.svg', (logo) ->
 	logo.name = 'logo'
 	logo.position = view.center
 	logo.fillColor = 'white'

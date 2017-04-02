@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var $body, $canvas, $home, $main, $nav, $photos, $spotlight, $window, canvas, changePhoto, clickNavLink, ease, hoverNavLink, hoverThing, loadSect, maskPaper, onScroll, resize, showSect, toggleThing, transEnd, unhoverNavLink, unhoverThing;
+    var $body, $canvas, $home, $main, $nav, $photos, $spotlight, $window, canvas, changePhoto, clickNavLink, ease, hoverNavLink, hoverThing, loadSect, maskPaper, onScroll, resize, root, showSect, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $main = $('main');
@@ -8,6 +8,7 @@
     $home = $('#home');
     $photos = $('#photos');
     $spotlight = $('.spotlight');
+    root = $body.data('root');
     transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd';
     ease = 'cubic-bezier(0.645, 0.045, 0.355, 1.000)';
     $('.bg').each(function(i, bg) {
@@ -149,7 +150,7 @@
       $sect = $('#' + slug);
       $sect.addClass('loaded');
       return $.ajax({
-        url: '/api?page=' + slug,
+        url: root + '/api?page=' + slug,
         dataType: 'html',
         error: function(jqXHR, status, err) {
           return console.log(jqXHR, status, err);
