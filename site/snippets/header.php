@@ -18,5 +18,5 @@ echo '<head>';
   echo '<script type="text/paperscript" src="assets/js/spotlight.js?version=' . date('mdYhis' ) . '" canvas="canvas"></script>';
 
 echo '</head>';
-echo '<body data-root="' . url('/') . '">';
+echo '<body data-root="' . url('/') . '" data-page="' . $page->slug() . '">';
 echo '<div id="wrapper">';

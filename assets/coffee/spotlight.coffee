@@ -27,7 +27,7 @@ view.onFrame = (event) ->
 			x: (Math.abs(cursor.position.x) - $(window).innerWidth())*-1,
 			y: (Math.abs(cursor.position.y) - $(window).innerHeight())*-1
 		}
-		logo.rotate (cursorDelta.x+cursorDelta.y)/8
+		logo.rotate (cursorDelta.x+cursorDelta.y)/3
 		logo.position = logoDelta
 
 # view.onResize = (event) ->

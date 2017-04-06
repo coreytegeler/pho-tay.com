@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var $about, $body, $canvas, $featured, $home, $main, $nav, $photos, $spotlight, $window, $wrapper, canvas, changePhoto, clickNavLink, clickThing, closeThings, ease, hoverNavLink, hoverThing, loadPage, maskPaper, onScroll, resize, root, showPage, toggleAbout, togglePage, toggleThing, transEnd, unhoverNavLink, unhoverThing;
+    var $about, $body, $canvas, $featured, $home, $main, $nav, $photos, $spotlight, $window, $wrapper, canvas, changePhoto, clickNavLink, clickThing, closeThings, ease, hoverNavLink, hoverThing, loadPage, maskPaper, onLoad, onScroll, openPage, page, resize, root, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $wrapper = $('#wrapper');
@@ -12,6 +12,7 @@
     $photos = $('#photos');
     $spotlight = $('.spotlight');
     root = $body.data('root');
+    page = $body.data('page');
     transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd';
     ease = 'cubic-bezier(0.645, 0.045, 0.355, 1.000)';
     $('.bg').each(function(i, bg) {
@@ -33,26 +34,6 @@
     maskPaper = new paper.PaperScope;
     canvas = document.getElementById('canvas');
     $canvas = $(canvas);
-    onScroll = function(e) {
-      var featuredBottom;
-      featuredBottom = $main.position().top + $featured.innerHeight();
-      if (featuredBottom <= 0 || $about.is('.show')) {
-        return $nav.css({
-          top: 0
-        });
-      } else {
-        $nav.removeClass('fixed');
-        return $nav.css({
-          top: featuredBottom
-        });
-      }
-    };
-    resize = function() {
-      return $canvas.css({
-        width: $window.innerWidth(),
-        height: $window.innerHeight()
-      });
-    };
     changePhoto = function(e) {
       var $curPhoto, $nextPhoto;
       $curPhoto = $('#photos .bg.show');
@@ -164,7 +145,6 @@
       slug = $(this).data('slug');
       url = $(this).attr('href');
       $('nav .button a.selected').removeClass('selected');
-      $nav.find('a[data-slug="' + slug + '"]').addClass('selected');
       $curPage = $main.find('.page.show');
       $curThings = $curPage.find('article.thing');
       $nextPage = $('#' + slug);
@@ -172,11 +152,14 @@
       history.pushState(null, slug, url);
       if (slug === 'about') {
         if (abouting) {
+          $nav.find('a.' + $curPage.attr('id')).addClass('selected');
           return toggleAbout(false);
         } else {
+          $nav.find('a.about').addClass('selected');
           return toggleAbout(true);
         }
       } else {
+        $nav.find('a.' + slug).addClass('selected');
         pageTop = $featured.offset().top + $featured.innerHeight() - 25;
         $wrapper.animate({
           scrollTop: pageTop + $wrapper.scrollTop()
@@ -186,11 +169,11 @@
         }
         if (abouting) {
           toggleAbout(false);
-          return togglePage(slug);
+          return openPage(slug);
         } else {
           $curThings.removeClass('show');
           return $curThings.eq(0).on(transEnd, function() {
-            togglePage(slug);
+            openPage(slug);
             return $curThings.eq(0).off(transEnd);
           });
         }
@@ -202,7 +185,7 @@
     unhoverNavLink = function() {
       return $photos.removeClass('navigating');
     };
-    togglePage = function(slug) {
+    openPage = function(slug) {
       if (!$('#' + slug).is('.loaded')) {
         return loadPage(slug);
       } else {
@@ -248,6 +231,44 @@
         return $about.removeClass('show');
       }
     };
+    onLoad = function(page) {
+      if (['music', 'shows', 'videos'].indexOf(page) >= 0) {
+        $nav.find('a.' + page).addClass('selected');
+        return openPage(page);
+      } else if (page === 'about') {
+        $nav.find('a.about').addClass('selected');
+        openPage('music');
+        return toggleAbout(true);
+      } else {
+        $nav.find('a.music').addClass('selected');
+        return openPage('music');
+      }
+    };
+    onScroll = function(e) {
+      var featuredBottom, mainBottom;
+      featuredBottom = $main.position().top + $featured.innerHeight();
+      mainBottom = $main.position().top + $main.innerHeight() - $window.innerHeight();
+      if (mainBottom <= 0) {
+        return $nav.css({
+          top: mainBottom
+        });
+      } else if (featuredBottom <= 0 || $about.is('.show')) {
+        return $nav.css({
+          top: 0
+        });
+      } else {
+        $nav.removeClass('fixed');
+        return $nav.css({
+          top: featuredBottom
+        });
+      }
+    };
+    resize = function() {
+      return $canvas.css({
+        width: $window.innerWidth(),
+        height: $window.innerHeight()
+      });
+    };
     $main.on('mouseenter', '.thing .hover', hoverThing);
     $main.on('mouseleave', '.thing .hover', unhoverThing);
     $main.on('click', '.thing a.open', clickThing);
@@ -257,7 +278,7 @@
     $('nav .button a').on('mouseleave', unhoverNavLink);
     $wrapper.scroll(onScroll).scroll();
     $window.resize(resize).resize();
-    showPage('music');
+    onLoad(page);
   });
 
 }).call(this);
