@@ -9,3 +9,13 @@ fields:
   text:
     label: Text
     type: wysiwyg
+  featured:
+    label: Featured
+    type: toggle
+    text: yes/no
+    default: no
+    width: 1/2
+  featured_label:
+    label: Featured Label
+    type: text
+    width: 1/2

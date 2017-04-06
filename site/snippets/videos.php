@@ -1,7 +1,7 @@
 <?php
 $page = page('videos');
 $index = 0;
-$videos = $page->children()->filterBy( 'featured', 'false' );
+$videos = $page->children()->filterBy( 'featured', '!=', 'true' );
 $music_videos = $videos->filterBy( 'type', 'music_video' )->sortBy( 'date', 'desc' );
 if( sizeof( $music_videos ) ) {
 	echo '<div class="group">';

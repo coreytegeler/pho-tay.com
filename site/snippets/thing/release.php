@@ -7,14 +7,25 @@ if( $image = $release->art() ) {
 }
 $title = $release->title();
 $type = $release->type();
-$about = $release->about();
+$links = $release->links();
 echo '<article class="thing ' . $parity . ( $type == 'release' ? ' large' : '' ) . '">';
 	echo '<div class="image">';
-		echo '<a href="' . $release->link() . '" target="_blank" class="release open">';
+		echo '<a href="#" class="hover release open">';
 			if( $image ) {
-				echo '<img class="hover" src="' . $image->url() .  '"/>';
+				echo '<img src="' . $image->url() .  '"/>';
 			}
 		echo '</a>';
+		echo '<div class="more">';
+			echo '<div class="inner">';
+				if( !$links->empty() ) {
+					echo '<div class="links">';
+						foreach ($links->toStructure() as $i => $link) {
+							echo '<a href="' . $link->_url() . '" target="_blank">' . $link->_title() . '</a>';
+						}
+					echo '</div>';
+				}
+			echo '</div>';
+		echo '</div>';
 	echo '</div>';
 	echo '<div class="info">';
 		echo '<div class="center">';
@@ -25,6 +36,9 @@ echo '<article class="thing ' . $parity . ( $type == 'release' ? ' large' : '' )
 				echo '<div class="row">';
 					if( $date = $release->date( 'm.d.y' ) ) {
 						echo '<span class="date">' . $date . '</span>';
+					}
+					if( $label = $release->label() ) {
+						echo '<span class="label">' . $label . '</span>';
 					}
 				echo '</div>';
 			echo '</div>';

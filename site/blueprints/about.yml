@@ -15,10 +15,22 @@ fields:
     label: Title
     type: title
     
-  intro:
-    label: Intro
-    type: textarea
-    
-  text:
-    label: Text
-    type: textarea
+  about:
+    label: About
+    type: wysiwyg
+
+  links:
+    label: Links
+    type: builder
+    fieldsets:
+      track:
+        label: Link
+        fields:
+          _title:
+            label: Title
+            type: text
+            width: 1/2
+          _url:
+            label: URL
+            type: text
+            width: 1/2

@@ -3,6 +3,7 @@ title: Site
 pages:
   template:
     - home
+    - about
     - music
     - videos
     - shows

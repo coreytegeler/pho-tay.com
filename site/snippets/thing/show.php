@@ -10,11 +10,11 @@ $type = $show->type();
 $about = $show->about();
 echo '<article class="thing hide ' . $parity . '">';
 	echo '<div class="image ' . ( $image ? '' : 'no' ) . '">';
-		echo '<a href="' . $show->link() . '" target="_blank" class="show open">';
+		echo '<a href="#" class="hover show open">';
 			if( $image ) {
-				echo '<img class="hover" src="' . $image->url() .  '"/>';
+				echo '<img src="' . $image->url() .  '"/>';
 			} else {
-				echo '<h3 class="hover">' . $title . '</h3>';
+				echo '<h3>' . $title . '</h3>';
 				if( $date = $show->date( 'm.d.y' ) ) {
 					echo '<h4>' . $date . '</h4>';
 				}

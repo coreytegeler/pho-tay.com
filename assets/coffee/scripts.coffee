@@ -1,7 +1,10 @@
 $ ->
 	$window = $(window)
 	$body = $('body')
+	$wrapper = $('#wrapper')
 	$main = $('main')
+	$about = $('#about')
+	$featured = $('#featured')
 	$nav = $('nav')
 	$home = $('#home')
 	$photos = $('#photos')
@@ -26,10 +29,14 @@ $ ->
 	$canvas = $(canvas)
 
 	onScroll = (e) ->
-		if $main.offset().top - $window.scrollTop() <= 0
-			$nav.addClass('fixed')
+		featuredBottom = $main.position().top + $featured.innerHeight()
+		if featuredBottom <= 0 || $about.is('.show') 
+			$nav.css
+				top: 0
 		else
 			$nav.removeClass('fixed')
+			$nav.css
+				top: featuredBottom
 	
 	resize = () ->
 		$canvas.css
@@ -43,41 +50,62 @@ $ ->
 			$nextPhoto = $('#photos .bg').first()	
 		$curPhoto.removeClass('show')
 		$nextPhoto.addClass('show')
-		$('.thing.opened').each (i, thing) ->
-			toggleThing(thing)
+		closeThings()
 
-	toggleThing = (x) ->
-		if($(x).is('.thing'))
-			$thing = $(x)
+	clickThing = (e) ->
+		if $(e.currentTarget).attr('target')
+			return
+		$thing = $(e.currentTarget).parents('.thing')
+		e.preventDefault()
+		if !$thing.is('.hidden')
+			toggleThing($thing)
 		else
-			$target = $(x.target)
-			x.preventDefault()
-			$thing = $target.parents('.thing')
-		$more = $thing.find('.more')
-		$inner = $more.find('.inner')
-		console.log $more
+			closeThings()
+
+	toggleThing = (thing) ->
+		$thing = $(thing)
+		$mores = $thing.find('.more')
 		if !$thing.is('.opened')
 			hoverThing($thing)
-			if $inner.html().length
-				height = $inner.innerHeight()
-				$thing.addClass('opened')
-				$more.css('height', height)
+			$thing.addClass('opened')
+			savedHeight = 0
+			$mores.each () ->
+				$more = $(this)
+				$inner = $more.find('.inner')
+				if $inner.html().length
+					height = $inner.innerHeight()
+					if height > savedHeight
+						savedHeight = height
+					$more.transition
+						height: height
+					, 400, ease
+			top = $thing.innerHeight() + $thing.offset().top + savedHeight
 		else
+			$siblings = $thing.parents('.page').find('.thing').not($thing)
 			$thing.removeClass('opened')
-			unhoverThing($thing)
-			$more.css('height', '')
-
+			$mores.each () ->
+				$more = $(this)
+				$more.transition
+					height: 0
+				, 600, ease
+			setTimeout () ->
+				$siblings.removeClass('hidden')
+			, 600
+				
 	hoverThing = (x) ->
 		if($(x).is('.thing'))
 			$thing = $(x)
 		else
 			$target = $(x.target)
 			$thing = $target.parents('.thing')
-		$siblings = $thing.parents('section').find('.thing')
+		$page = $thing.parents('.page')
+		$siblings = $page.find('.thing')
 		if $thing.is('.opened') || $siblings.filter('.opened').length
 			return
 		$thing.addClass('hover').removeClass('hidden')
-		$('.hide').addClass('hidden')
+		if $siblings.length
+			$siblings.filter(':not(.hover)').addClass('hidden')
+			$('.hide').addClass('hidden')
 
 	unhoverThing = (x) ->
 		if($(x).is('.thing'))
@@ -85,71 +113,103 @@ $ ->
 		else
 			$target = $(x.target)
 			$thing = $target.parents('.thing')
-		$siblings = $thing.parents('section').find('.thing')
+		$siblings = $thing.parents('.page').find('.thing')
 		if $thing.is('.opened') || $siblings.filter('.opened').length
 			return
 		$thing.removeClass('hover')
-		if(!$('.thing.hover').length)
+		if(!$('.page .thing.hover').length)
 			$('.hide').removeClass('hidden')
-			$siblings.each (i, elem) ->
-				setTimeout () ->
-					$(elem).removeClass('hidden')
-				, i*10
+			$siblings.removeClass('hidden')
+
+	closeThings = () ->
+		$('.thing.opened').each (i, thing) ->
+			toggleThing(thing)
+			unhoverThing(thing)
 
 	clickNavLink = (e) ->
 		e.preventDefault()
-		slug = $(this).attr('href').replace('#', '')
-		$curSect = $main.find('section.show')
-		$curThings = $curSect.find('article.thing')
-		$nextSect = $('#'+slug)
-		if $nextSect.is('.show')
-			return
-		$curThings.removeClass('show')
-		setTimeout () ->
-			$curSect.removeClass('show')
-			if !$nextSect.is('.loaded')
-				loadSect(slug)
+		slug = $(this).data('slug')
+		url = $(this).attr('href')
+		$('nav .button a.selected').removeClass('selected')
+		$nav.find('a[data-slug="'+slug+'"]').addClass('selected')
+		$curPage = $main.find('.page.show')
+		$curThings = $curPage.find('article.thing')
+		$nextPage = $('#'+slug)
+		abouting = $about.is('.show')
+		history.pushState(null, slug, url)
+		if slug == 'about'
+			if abouting
+				toggleAbout(false)
 			else
-				showSect(slug)
-		, 500
+				toggleAbout(true)
+		else
+			pageTop = $featured.offset().top + $featured.innerHeight() - 25
+			$wrapper.animate
+				scrollTop: pageTop + $wrapper.scrollTop()
+			, 500
+			if $nextPage.is('.show')
+				return
+			if abouting
+				toggleAbout(false)
+				togglePage(slug)
+			else
+				$curThings.removeClass('show')
+				$curThings.eq(0).on transEnd, () ->
+					togglePage(slug)
+					$curThings.eq(0).off(transEnd)
 
 	hoverNavLink = () ->
-		$main.addClass('no-mix')
 		$photos.addClass('navigating')
 
 	unhoverNavLink = () ->
-		$main.removeClass('no-mix')
 		$photos.removeClass('navigating')
 
-	loadSect = (slug) ->
-		$sect = $('#'+slug)
-		$sect.addClass 'loaded'
+	togglePage = (slug) ->
+		if !$('#'+slug).is('.loaded')
+			loadPage(slug)
+		else
+			showPage(slug)
+
+	loadPage = (slug) ->
+		$page = $('#'+slug)
+		$page.addClass 'loaded'
 		$.ajax
 			url: root+'/api?page='+slug
 			dataType: 'html'
 			error: (jqXHR, status, err) ->
 				console.log(jqXHR, status, err)
 			success: (response, status, jqXHR) ->
-				$sect.append response
-				showSect(slug)
+				$page.append response
+				showPage(slug)
 
-	showSect = (slug) ->
-		$sect = $('#'+slug)
-		$sect.addClass 'show'
-		$sect.addClass 'loaded'
-		$sect.find('article.thing').each (i, thing) ->
+	showPage = (slug) ->
+		$page = $('#'+slug)
+		$('.page.show').removeClass('show')
+		$page.addClass('show')
+		$page.addClass('loaded')
+		$page.find('article.thing').each (i, thing) ->
 			$(thing).imagesLoaded () ->
 				$(thing).addClass('show')
 
+	toggleAbout = (show) ->
+		if show
+			$wrapper.addClass('no-scroll')
+			$main.addClass('hidden')
+			$about.addClass('show')
+		else
+			$wrapper.removeClass('no-scroll')
+			$main.removeClass('hidden')
+			$about.removeClass('show')
+
 	$main.on 'mouseenter', '.thing .hover', hoverThing
 	$main.on 'mouseleave', '.thing .hover', unhoverThing
-	$main.on 'click', '.thing a.open', toggleThing
+	$main.on 'click', '.thing a.open', clickThing
 	$('#photos').on 'click', changePhoto
 	$('nav .button a').on 'click', clickNavLink
 	$('nav .button a').on 'mouseenter', hoverNavLink
 	$('nav .button a').on 'mouseleave', unhoverNavLink
-	$window.scroll(onScroll).scroll()
+	$wrapper.scroll(onScroll).scroll()
 	$window.resize(resize).resize()
-	showSect('music')
+	showPage('music')
 
 	return

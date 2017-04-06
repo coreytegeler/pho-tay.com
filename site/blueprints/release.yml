@@ -23,16 +23,6 @@ fields:
       remix: Remix
       mix: Mix
     width: 1/2
-  featured:
-    label: Featured
-    type: toggle
-    text: yes/no
-    default: no
-    width: 1/2
-  featured_label:
-    label: Featured Label
-    type: text
-    width: 1/2
   art:
     label: Artwork
     type: selector
@@ -41,6 +31,10 @@ fields:
   about:
     label: About
     type: wysiwyg
+  label:
+    label: Label
+    type: text
+    width: 1/2
   tracks:
     label: Tracks
     type: builder
@@ -74,3 +68,13 @@ fields:
             label: URL
             type: text
             width: 1/2
+  featured:
+    label: Featured
+    type: toggle
+    text: yes/no
+    default: no
+    width: 1/2
+  featured_label:
+    label: Featured Label
+    type: text
+    width: 1/2

@@ -26,9 +26,19 @@ fields:
     label: Link
     type: text
     width: 1/2
-  image:
-    label: Image
+  still:
+    label: Still Frame
     type: selector
     mode: single
     types: image
+    width: 1/2
+  featured:
+    label: Featured
+    type: toggle
+    text: yes/no
+    default: no
+    width: 1/2
+  featured_label:
+    label: Featured Label
+    type: text
     width: 1/2

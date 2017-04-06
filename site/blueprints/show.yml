@@ -23,3 +23,13 @@ fields:
     type: selector
     mode: single
     types: image
+    featured:
+  label: Featured
+    type: toggle
+    text: yes/no
+    default: no
+    width: 1/2
+  featured_label:
+    label: Featured Label
+    type: text
+    width: 1/2

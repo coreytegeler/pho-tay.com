@@ -1,41 +1,33 @@
-mousePoint = view.center
-logoTop = view.center.y
+cursorPoint = new Point(view.center.x*1.5, view.center.y)
+cursor = new Path.Circle(cursorPoint, 100)
+cursor.name = 'cursor'
+cursor.center = cursorPoint
+cursor.fillColor = 'white'
 
-slWidth = 100
-
-# spotlight = new Raster('spotlightRaster')
-# spotlight.position = view.center
-# spotlight.scale 0.5
-
-spotlight = new Path.Circle(mousePoint, slWidth)
-spotlight.name = 'spotlight'
-spotlight.center = mousePoint
-spotlight.fillColor = 'white'
 root = $('body').data('root')
 project.importSVG root+'/assets/img/logo.svg', (logo) ->
+	logoPoint = new Point(view.center.x/2, view.center.y)
 	logo.name = 'logo'
-	logo.position = view.center
+	logo.position = logoPoint
 	logo.fillColor = 'white'
 	logo.scale 0.5
-	$(window).scroll (e) ->
-		scrollTop = $(window).scrollTop()
-		winHeight = $(window).innerHeight()
-		logoTop = (winHeight/2) - scrollTop
+	$('body').scroll (e) ->
+		scrollTop = $('body').scrollTop()
+		winHeight = $('body').innerHeight()
 	.scroll()
-		# logo.position.y = logoTop
 	
 view.onMouseMove = (event) ->
-	mousePoint = event.point
+	cursorPoint = event.point
 
 view.onFrame = (event) ->
-	spotlightDelta = (mousePoint - spotlight.position)/5
-	if spotlightDelta.length > 0.1
-		spotlight.position += spotlightDelta
-	logo = project.getItem({name:'logo'})
-	if logo
-		logoDelta = (logoTop - logo.position.y)/3
-		logo.position.y += logoDelta
+	cursorDelta = (cursorPoint - cursor.position)/5
+	if cursorDelta.length > 0.1 && logo = project.getItem({name:'logo'})
+		cursor.position += cursorDelta
+		logoDelta = {
+			x: (Math.abs(cursor.position.x) - $(window).innerWidth())*-1,
+			y: (Math.abs(cursor.position.y) - $(window).innerHeight())*-1
+		}
+		logo.rotate (cursorDelta.x+cursorDelta.y)/8
+		logo.position = logoDelta
 
-view.onResize = (event) ->
-	if logo = project.getItem({name:'logo'})
-		logo.position.x = view.center.x
+# view.onResize = (event) ->

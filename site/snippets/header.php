@@ -19,3 +19,4 @@ echo '<head>';
 
 echo '</head>';
 echo '<body data-root="' . url('/') . '">';
+echo '<div id="wrapper">';

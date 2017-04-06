@@ -7,8 +7,8 @@ email: coreytegeler@gmail.com
 language: en
 role: admin
 history:
-  - shows/quantic-dam-funk-photay-good-room
-  - shows/matthewdavid-lord-raja-photay
-  - shows/sinkane-photay
-  - shows/worldwide-festival-sete-2016
-  - shows/japan-tour-2016
+  - about
+  - music/photay-ep
+  - music/bismillah-photay-remix
+  - music/season-2-episode-3-photay-remix
+  - music/sadie-ep

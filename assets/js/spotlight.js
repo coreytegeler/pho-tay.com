@@ -1,60 +1,49 @@
 (function() {
-  var logoTop, mousePoint, root, slWidth, spotlight;
+  var cursor, cursorPoint, root;
 
-  mousePoint = view.center;
+  cursorPoint = new Point(view.center.x * 1.5, view.center.y);
 
-  logoTop = view.center.y;
+  cursor = new Path.Circle(cursorPoint, 100);
 
-  slWidth = 100;
+  cursor.name = 'cursor';
 
-  spotlight = new Path.Circle(mousePoint, slWidth);
+  cursor.center = cursorPoint;
 
-  spotlight.name = 'spotlight';
-
-  spotlight.center = mousePoint;
-
-  spotlight.fillColor = 'white';
+  cursor.fillColor = 'white';
 
   root = $('body').data('root');
 
   project.importSVG(root + '/assets/img/logo.svg', function(logo) {
+    var logoPoint;
+    logoPoint = new Point(view.center.x / 2, view.center.y);
     logo.name = 'logo';
-    logo.position = view.center;
+    logo.position = logoPoint;
     logo.fillColor = 'white';
     logo.scale(0.5);
-    return $(window).scroll(function(e) {
+    return $('body').scroll(function(e) {
       var scrollTop, winHeight;
-      scrollTop = $(window).scrollTop();
-      winHeight = $(window).innerHeight();
-      return logoTop = (winHeight / 2) - scrollTop;
+      scrollTop = $('body').scrollTop();
+      return winHeight = $('body').innerHeight();
     }).scroll();
   });
 
   view.onMouseMove = function(event) {
-    return mousePoint = event.point;
+    return cursorPoint = event.point;
   };
 
   view.onFrame = function(event) {
-    var logo, logoDelta, spotlightDelta;
-    spotlightDelta = (mousePoint - spotlight.position) / 5;
-    if (spotlightDelta.length > 0.1) {
-      spotlight.position += spotlightDelta;
-    }
-    logo = project.getItem({
+    var cursorDelta, logo, logoDelta;
+    cursorDelta = (cursorPoint - cursor.position) / 5;
+    if (cursorDelta.length > 0.1 && (logo = project.getItem({
       name: 'logo'
-    });
-    if (logo) {
-      logoDelta = (logoTop - logo.position.y) / 3;
-      return logo.position.y += logoDelta;
-    }
-  };
-
-  view.onResize = function(event) {
-    var logo;
-    if (logo = project.getItem({
-      name: 'logo'
-    })) {
-      return logo.position.x = view.center.x;
+    }))) {
+      cursor.position += cursorDelta;
+      logoDelta = {
+        x: (Math.abs(cursor.position.x) - $(window).innerWidth()) * -1,
+        y: (Math.abs(cursor.position.y) - $(window).innerHeight()) * -1
+      };
+      logo.rotate((cursorDelta.x + cursorDelta.y) / 8);
+      return logo.position = logoDelta;
     }
   };
 

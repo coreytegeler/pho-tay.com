@@ -1,14 +1,14 @@
 <?php
 $page = page('music');
 $index = 0;
-$releases = $page->children()->filterBy( 'featured', 'false' );
+$releases = $page->children()->filterBy( 'featured', '!=', 'true' )->sortBy( 'date', 'desc' );
 
-$albums = $releases->filterBy( 'type', 'album' )->sortBy( 'date', 'desc' );
+$albums = $releases->filterBy( 'type', 'album' );
 if( sizeof( $albums ) ) {
 	echo '<div class="group">';
 		echo '<div class="label hide">';
-				echo '<h4>Albums</h4>';
-			echo '</div>';
+			echo '<h4>Albums</h4>';
+		echo '</div>';
 		foreach( $albums as $album ) {
 			$index++;
 			snippet( 'thing/release', array( 'release' => $album, 'page' => $page, 'index' => $index ) );
@@ -16,7 +16,7 @@ if( sizeof( $albums ) ) {
 	echo '</div>';
 }
 
-$mixes = $releases->filterBy( 'type', 'mix' )->sortBy( 'date', 'desc' );
+$mixes = $releases->filterBy( 'type', 'mix' );
 if( sizeof( $mixes ) ) {
 	echo '<div class="group">';
 		echo '<div class="label hide">';
@@ -29,7 +29,7 @@ if( sizeof( $mixes ) ) {
 	echo '</div>';
 }
 
-$remixes = $releases->filterBy( 'type', 'remix' )->sortBy( 'date', 'desc' );
+$remixes = $releases->filterBy( 'type', 'remix' );
 if( sizeof( $remixes ) ) {
 	echo '<div class="group">';
 		echo '<div class="label hide">';

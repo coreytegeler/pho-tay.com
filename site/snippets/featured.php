@@ -10,12 +10,8 @@ if( sizeof( $features ) ){
 				}
 			}
 			$title = $featured->title();
+			$links = $featured->links();
 			echo '<div class="image">';
-				echo '<a href="' . $featured->link() . '" class="release open">';
-					if( $image ) {
-						echo '<img src="' . $image->url() . '"/>';
-					}
-				echo '</a>';
 				echo '<div class="meta">';
 					echo '<div class="row">';
 						if( $featured_label = $featured->featured_label() ) {
@@ -26,11 +22,27 @@ if( sizeof( $features ) ){
 						}
 					echo '</div>';
 				echo '</div>';
+				echo '<a href="' . $featured->link() . '" class="release open">';
+					if( $image ) {
+						echo '<img src="' . $image->url() . '"/>';
+					}
+				echo '</a>';
+				echo '<div class="more">';
+					echo '<div class="inner">';
+						if( !$links->empty() ) {
+							echo '<div class="links">';
+								foreach ($links->toStructure() as $i => $link) {
+									echo '<a href="' . $link->_url() . '" target="_blank">' . $link->_title() . '</a>';
+								}
+							echo '</div>';
+						}
+					echo '</div>';
+				echo '</div>';
 			echo '</div>';
 			echo '<div class="info">';
 				echo '<div class="center">';
 					echo '<h1>' . $title . '</h1>';
-					snippet( 'release_info', array( 'release' => $featured ) );
+					snippet( 'info/release', array( 'release' => $featured ) );
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';

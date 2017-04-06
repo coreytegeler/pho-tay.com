@@ -3,8 +3,9 @@ $light: #fffefe;
 $ease: cubic-bezier(0.645, 0.045, 0.355, 1.000);
 html, body {
 	width: 100%;
+	height: 100%;
 	margin: auto;
-	overflow-x: hidden;
+	overflow: hidden;
 	font-family: 'Archivo Narrow', sans-serif;
 	background-color: black;
 	background-repeat: no-repeat;
@@ -12,6 +13,20 @@ html, body {
 	font-size: 18px;
 	line-height: 1.3em;
 	color: $light;
+	::selection {
+		background: $light;
+		color: black;
+	}
+}
+#wrapper {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow-y: scroll;
+	&.no-scroll {
+		overflow: hidden;
+	}
 }
 h1 {
 	font-size: 7em;
@@ -40,13 +55,25 @@ a {
 		pointer-events: auto;
 	}
 }
+p {
+	margin: 0 0 1em 0;
+	&:last-child {
+		margin: 0;
+	}
+}
 #home {
 	width: 100vw;
 	height: 101vh;
+	display: table;
 	z-index: 100;
 	overflow: hidden;
 	pointer-events: none;
-	#logo {
+	position: relative;
+	nav {
+		position: absolute;
+		top: 0 !important;
+	}
+	.logo {
 		width: 100%;
 		height: 100%;
 		position: absolute;
@@ -94,7 +121,7 @@ a {
 		&.navigating {
 			background-color: $light;
 			.bg {
-				opacity: 0 !important;
+				// opacity: 0 !important;
 			}
 		}
 	}
@@ -132,23 +159,31 @@ main {
 	width: 100%;
 	height: 100%;
 	min-height: 100vh;
+	display: table;
 	z-index: 200;
 	padding: 0 0 25vh 0;
 	pointer-events: none;
 	position: relative;
 	mix-blend-mode: lighten;
+	transition: opacity 500ms $ease;
 	&.no-mix {
 		mix-blend-mode: normal;
+	}
+	&.hidden {
+		opacity: 0;
+		a, img {
+			pointer-events: none !important;
+		}
 	}
 }
 nav {
 	width: 6vw;
 	height: 100vh;
-	position: absolute;
+	position: fixed;
 	left: calc(50% - 3vw);
-  top: 0;
+  top: 100%;
   display: flex;
-  z-index: 1;
+  z-index: 100 !important;
   transform: rotate(180deg);
 	.inner {
 		width: calc(100vh - 1em);
@@ -175,13 +210,19 @@ nav {
 			    pointer-events: all;
 					h3 {
 						color: $light;
+						border-bottom: .15em solid transparent;
+					}
+					&.selected {
+						h3 {
+							padding-bottom: 0;
+							border-color: inherit;
+						}
 					}
 					&:hover {
 						cursor: pointer;
 						h3 {
 							cursor: pointer;
 							color: black;
-							// border-bottom: .15em solid $light;
 						}
 					}
 				}
@@ -189,51 +230,59 @@ nav {
 		}
 	}
 	&.fixed {
-		position: fixed;
+		// position: fixed;
+	}
+}
+.links {
+	a {
+		display: inline-table;
+		color: $light;
+		background-color: black;
+		border-radius: .5em;
+		border: solid $light;
+		&:hover {
+			color: black;
+			background-color: $light;
+		}
 	}
 }
 .thing {
 	.more {
+		width: 100%;
 		height: 0;
-		transition: height 600ms $ease;
+		overflow: hidden;
 		.inner {
 			transition: opacity 400ms 200ms $ease;
 			opacity: 0;
-			padding: 1em 0 25vh 0;
+			padding: .5em 0 3em 0;
 			.about {
-				padding-bottom: 1em;
-				p {
-					margin-bottom: 1em;
-					&:last-child {
-						margin: 0;
-					}
-				}
+				padding: 1.5em 0;
 			}
 			ul, ol {
 				list-style: none;
 				padding: 0 0 1em 0;
 				margin: 0;
 			}
-			ul.links {
-				li {
-					display: inline-block;
-					padding-bottom: .5em;
-					margin: 0 .5em 0 0;
-					a {
-						padding: .5em;
-						background-color: white;
-						color: black;
-						border-radius: .5em;
-					}
+			.links {
+				display: table;
+				padding-top: .45em;
+				a {
+					padding: .5em;
+					margin: 0 .75em .75em 0;
+					border-width: .15em;
 				}
 			}
 			ol.tracks {
+				width: 100%;
+				border-top: 2px solid $light;
 				li {
-					border-bottom: 2px solid #0086ff;
+					width: 100%;
+					border-bottom: 2px solid $light;
 					padding: .5em 0;
 					margin: 0;
 					.title {
-
+						width: auto !important;
+						display: inline !important;
 					}
 					.length {
 						margin-left: 1em;
@@ -257,15 +306,15 @@ section {
 	&#featured {
 		width: 100vw;
 		mix-blend-mode: lighten;
+		position: relative;
 		.thing {
 			min-height: 100vh;
 			width: 100%;
 			display: flex;
 			.image {
 				width: 60vw;
-				height: 60vw;
+				min-height: 60vw;
 				background: black;
-				display: flex;
 				position: relative;
 				a.open {
 					width: 100%;
@@ -274,6 +323,14 @@ section {
 						width: 100%;
 						display: table;
 						margin: auto;
+					}
+				}
+				.links {
+					width: 100%;
+					margin-top: .2em;
+					a {
+						float: right;
+						margin: 0 0 .75em .75em;
 					}
 				}
 			}
@@ -288,7 +345,7 @@ section {
 					margin: auto 2em;
 					.more {
 						height: 0;
-						overflow: hidden;
+						// overflow: hidden;
 					}
 				}
 			}
@@ -313,178 +370,228 @@ section {
 			}
 		}
 	}
-	&.things {
-		width: 100%;
-		position: relative;
-		display: none;
-		.group {
-			position: relative;
-			// padding: 10vh 0;
-			.label {
-				width: 100%;
-				height: 100%;
-		    display: flex;
-		    position: absolute;
-		    left: 0;
-		    top: 0;
-		    display: none;
-		    h3 {
-		      text-align: center;
-			    text-transform: uppercase;
-			    margin: auto;
-			    letter-spacing: .3em;
-			  }
-			}
-			&:nth-child(odd) {
-				.label h3 {
-					transform: rotate(-90deg);
-				}
-			}
-			&:nth-child(even) {
-				.label h3 {
-					transform: rotate(90deg);
-				}
-			}
-		}
-		article.thing {
+	&#pages {
+		widows: 100%;
+		min-height: 100vh;
+		.page {
 			width: 100%;
-			display: flex;
-			mix-blend-mode: luminosity;
+			position: relative;
 			transition: opacity 500ms $ease;
-			opacity: 0;
-			.image {
-				width: 40vw;
-				transition: opacity 300ms $ease;
-				a {
-					width: 30vw;
-					display: table;
-					margin: auto;
-				}
-				img {
+			display: none;
+			.group {
+				position: relative;
+				// padding: 10vh 0;
+				.label {
 					width: 100%;
-			    filter: grayscale(1);
-			    transition: filter 300ms $ease;
-			    pointer-events: auto;
+					height: 100%;
+			    display: flex;
+			    position: absolute;
+			    left: 0;
+			    top: 0;
+			    display: none;
+			    h3 {
+			      text-align: center;
+				    text-transform: uppercase;
+				    margin: auto;
+				    letter-spacing: .3em;
+				  }
 				}
-				&.no {
-					a {
-						border: .4em solid $light;
-						padding: .5em;
+				&:nth-child(odd) {
+					.label h3 {
+						transform: rotate(-90deg);
+					}
+				}
+				&:nth-child(even) {
+					.label h3 {
+						transform: rotate(90deg);
 					}
 				}
 			}
-			.info {
-				width: 60vw;
-				display: table;
-				align-content: center;
+			article.thing {
+				width: 100%;
+				display: flex;
+				transition: all 500ms $ease;
 				opacity: 0;
-				transition: opacity 300ms $ease;
-				.center {
-					display: table;
-					pointer-events: none;
-				}
-				.title {
-					width: 100%;
-					display: table;
-					margin: auto;
-			    h1 {
-			    	margin: 0;
-			    	display: table;
-			    }
-				}
-				.meta {
-					display: table;
-					width: 100%;
-				}
-			}
-			&.show {
-				opacity: 1;
-			}
-			&.hover {
-				mix-blend-mode: lighten;
-				z-index: 1000;
-				opacity: 1 !important;
-				.info {
-					position: relative;
-					opacity: 1;
-					.center {
-						pointer-events: auto !important;
+				.image {
+					width: 30vw;
+					transition: opacity 300ms $ease;
+					a.hover {
+						width: 100%;
+						display: table;
+						margin: auto;
+					}
+					img {
+						width: 100%;
+				    filter: grayscale(1);
+				    transition: filter 300ms $ease;
+				    pointer-events: auto;
+					}
+					&.no {
+						a.hover {
+							border: .4em solid $light;
+							padding: .5em;
+						}
 					}
 				}
-				img {
-					filter: grayscale(0);
-				}
-			}
-			&.hidden:not(.hover) {
-				.image {
-					opacity: 0.1;
-				}
 				.info {
+					width: 60vw;
+					display: table;
+					align-content: center;
 					opacity: 0;
+					transition: opacity 300ms $ease;
+					.center {
+						display: table;
+						pointer-events: none;
+					}
+					.title {
+						width: 100%;
+						display: table;
+						margin: auto;
+				    h1 {
+				    	margin: 0;
+				    	display: table;
+				    }
+					}
+					.meta {
+						display: table;
+						width: 100%;
+					}
+					.inner {
+						max-width: 27em;
+						.about {
+							text-align: justify;
+						}
+					}
 				}
-			}
-			&.even {
-				flex-direction: row;
-				.image {
-					a {
+				&.show {
+					transition: all 1000ms $ease;
+					opacity: 1;
+				}
+				&.hover {
+					mix-blend-mode: lighten;
+					z-index: 1000;
+					opacity: 1 !important;
+					.info {
+						position: relative;
+						opacity: 1;
+						.center {
+							pointer-events: auto !important;
+						}
+					}
+					img {
+						filter: grayscale(0);
+					}
+				}
+				&.hidden:not(.hover) {
+					.image {
+						opacity: 0.1;
+					}
+					.info {
+						opacity: 0;
+					}
+				}
+				&.even {
+					flex-direction: row;
+					.image {
 						margin-left: 10vw;
+						.links {
+							a {
+								float: right;
+								margin: 0 .75em .75em 0;
+							}
+						}
 					}
-					&.no {
-						a {
-							margin-left: calc(10vw - 1.8em);
+					.info {
+						margin: auto;
+						.center {
+							padding: 0 8vw 0 2vw;
+							h2, .meta {
+								// padding: 0 8vw 0 2vw;
+							}
 						}
 					}
 				}
-				.info {
-					margin: auto;
-					.center {
-						padding: 0 8vw 0 2vw;
-						h2, .meta {
-							// padding: 0 8vw 0 2vw;
-						}
-					}
-				}
-			}
-			&.odd {
-				flex-direction: row-reverse;
-				// margin-bottom: -10em;
-				.image {
-					a {
-						float: right;
+				&.odd {
+					flex-direction: row-reverse;
+					// margin-bottom: -10em;
+					.image {
 						margin-right: 10vw;
-					}
-					&.no {
-						a {
-							margin-right: calc(10vw - 1.8em);
+						a.hover {
+							float: right;
+						}
+						&.no {
+							a {
+								margin-right: calc(10vw - 1.8em);
+							}
 						}
 					}
-				}
-				.info {
-					margin: auto;
-					.center {
-						float: right;
-						padding: 0 2vw 0 8vw;
-						h2 {
-							text-align: right;
-						}
-						.meta {
-							.row {
+					.info {
+						margin: auto;
+						.center {
+							float: right;
+							padding: 0 2vw 0 8vw;
+							h2 {
+								text-align: right;
+							}
+							.meta .row, .inner {
 								float: right;
 							}
 						}
 					}
 				}
+				&.large {
+					.image {
+						a {
+							margin: 0;
+						}
+					}
+				}
 			}
-			&.large {
-				.image {
+			&.show {
+				display: table;
+			}
+		}
+	}
+	&#about {
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		left: 0;
+		top: 0;
+		background-color: black; 
+		mix-blend-mode: lighten;
+		opacity: 0;
+		pointer-events: none;
+		display: flex;
+		flex-direction: rows;
+		.half {
+			width: calc(50% - 2em);
+			height: 100%;
+			overflow-y: auto;
+			.inner {
+				padding: 2em;
+				a {
+					display: table;
+				}
+			}
+			&.left {
+				padding-right: 2em;
+			}
+			&.right {
+				padding-left: 2em;
+				.links {
 					a {
-						margin: 0;
+						display: inline-table;
+						padding: .2em .5em;
+				    margin: 0 1em 1em 0;
+				    border-width: .28em;
 					}
 				}
 			}
 		}
 		&.show {
-			display: table;
+			opacity: 1;
+			pointer-events: all;
 		}
 	}
 }
@@ -492,5 +599,9 @@ section {
 	transition: opacity 300ms $ease;
 	&.hidden {
 		opacity: 0;
+		pointer-events: none;
+		a {
+			pointer-events: none !important;
+		}
 	}
 }
