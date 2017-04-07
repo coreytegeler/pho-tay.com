@@ -11,6 +11,7 @@ project.importSVG root+'/assets/img/logo.svg', (logo) ->
 	logo.position = logoPoint
 	logo.fillColor = 'white'
 	logo.scale 0.5
+	$('#wrapper').addClass('loa')
 	$('body').scroll (e) ->
 		scrollTop = $('body').scrollTop()
 		winHeight = $('body').innerHeight()

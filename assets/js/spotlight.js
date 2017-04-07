@@ -20,6 +20,7 @@
     logo.position = logoPoint;
     logo.fillColor = 'white';
     logo.scale(0.5);
+    $('#wrapper').addClass('loa');
     return $('body').scroll(function(e) {
       var scrollTop, winHeight;
       scrollTop = $('body').scrollTop();

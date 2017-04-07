@@ -24,6 +24,11 @@ html, body {
 	display: flex;
 	flex-direction: column;
 	overflow-y: scroll;
+	opacity: 0;
+	transition: opacity 500ms $ease;
+	&.loa.ded {
+		opacity: 1;
+	}
 	&.no-scroll {
 		overflow: hidden;
 	}
@@ -113,7 +118,6 @@ p {
 			background-size: cover;
 			background-repeat: no-repeat;
 			background-position: center;
-			transition: opacity 100ms $ease;
 			&.show {
 				opacity: 1;
 			}

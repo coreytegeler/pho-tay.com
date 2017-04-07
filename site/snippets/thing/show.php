@@ -8,7 +8,7 @@ if( $image = $show->flier() ) {
 $title = $show->title();
 $type = $show->type();
 $about = $show->about();
-echo '<article class="thing hide ' . $parity . '">';
+echo '<article class="thing ' . $parity . '">';
 	echo '<div class="image ' . ( $image ? '' : 'no' ) . '">';
 		echo '<a href="#" class="hover show open">';
 			if( $image ) {

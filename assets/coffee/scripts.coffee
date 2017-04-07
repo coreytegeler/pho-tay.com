@@ -23,6 +23,7 @@ $ ->
 				$bg.css
 					'backgroundImage': 'url('+image.target.src+')'
 				if(i == 0)
+					$wrapper.addClass('ded')
 					$bg.addClass('show')
 
 	maskPaper = new (paper.PaperScope)
@@ -49,11 +50,16 @@ $ ->
 			closeThings()
 
 	toggleThing = (thing) ->
+		console.log '!!'
 		$thing = $(thing)
 		$mores = $thing.find('.more')
 		if !$thing.is('.opened')
 			hoverThing($thing)
 			$thing.addClass('opened')
+			thingTop = $thing.offset().top + $wrapper.scrollTop() - 25
+			$wrapper.animate
+				scrollTop: thingTop
+			, 500
 			savedHeight = 0
 			$mores.each () ->
 				$more = $(this)
@@ -88,7 +94,8 @@ $ ->
 		$siblings = $page.find('.thing')
 		if $thing.is('.opened') || $siblings.filter('.opened').length
 			return
-		$thing.addClass('hover').removeClass('hidden')
+		$thing.addClass('hover')
+		$thing.removeClass('hidden')
 		if $siblings.length
 			$siblings.filter(':not(.hover)').addClass('hidden')
 			$('.hide').addClass('hidden')
@@ -116,12 +123,15 @@ $ ->
 		e.preventDefault()
 		slug = $(this).data('slug')
 		url = $(this).attr('href')
-		$('nav .button a.selected').removeClass('selected')
+		history.pushState({slug:slug}, slug, url)
+		handlePage(slug)
+
+	handlePage = (slug) ->
 		$curPage = $main.find('.page.show')
 		$curThings = $curPage.find('article.thing')
 		$nextPage = $('#'+slug)
 		abouting = $about.is('.show')
-		history.pushState(null, slug, url)
+		$('nav .button a.selected').removeClass('selected')
 		if slug == 'about'
 			if abouting
 				$nav.find('a.'+$curPage.attr('id')).addClass('selected')
@@ -220,6 +230,14 @@ $ ->
 			width: $window.innerWidth(),
 			height: $window.innerHeight()
 
+	onBrowserNav = (e) ->
+		e.preventDefault()
+		state = history.state
+		if state
+			slug = state.slug
+			console.log slug
+			handlePage(slug)
+
 	$main.on 'mouseenter', '.thing .hover', hoverThing
 	$main.on 'mouseleave', '.thing .hover', unhoverThing
 	$main.on 'click', '.thing a.open', clickThing
@@ -229,5 +247,7 @@ $ ->
 	$('nav .button a').on 'mouseleave', unhoverNavLink
 	$wrapper.scroll(onScroll).scroll()
 	$window.resize(resize).resize()
+	$(window).on 'popstate', onBrowserNav
+
 	onLoad(page)
 	return

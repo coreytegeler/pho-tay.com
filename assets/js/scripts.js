@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var $about, $body, $canvas, $featured, $home, $main, $nav, $photos, $spotlight, $window, $wrapper, canvas, changePhoto, clickNavLink, clickThing, closeThings, ease, hoverNavLink, hoverThing, loadPage, maskPaper, onLoad, onScroll, openPage, page, resize, root, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
+    var $about, $body, $canvas, $featured, $home, $main, $nav, $photos, $spotlight, $window, $wrapper, canvas, changePhoto, clickNavLink, clickThing, closeThings, ease, handlePage, hoverNavLink, hoverThing, loadPage, maskPaper, onBrowserNav, onLoad, onScroll, openPage, page, resize, root, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $wrapper = $('#wrapper');
@@ -26,6 +26,7 @@
             'backgroundImage': 'url(' + image.target.src + ')'
           });
           if (i === 0) {
+            $wrapper.addClass('ded');
             return $bg.addClass('show');
           }
         });
@@ -59,12 +60,17 @@
       }
     };
     toggleThing = function(thing) {
-      var $mores, $siblings, $thing, savedHeight, top;
+      var $mores, $siblings, $thing, savedHeight, thingTop, top;
+      console.log('!!');
       $thing = $(thing);
       $mores = $thing.find('.more');
       if (!$thing.is('.opened')) {
         hoverThing($thing);
         $thing.addClass('opened');
+        thingTop = $thing.offset().top + $wrapper.scrollTop() - 25;
+        $wrapper.animate({
+          scrollTop: thingTop
+        }, 500);
         savedHeight = 0;
         $mores.each(function() {
           var $inner, $more, height;
@@ -109,7 +115,8 @@
       if ($thing.is('.opened') || $siblings.filter('.opened').length) {
         return;
       }
-      $thing.addClass('hover').removeClass('hidden');
+      $thing.addClass('hover');
+      $thing.removeClass('hidden');
       if ($siblings.length) {
         $siblings.filter(':not(.hover)').addClass('hidden');
         return $('.hide').addClass('hidden');
@@ -140,16 +147,22 @@
       });
     };
     clickNavLink = function(e) {
-      var $curPage, $curThings, $nextPage, abouting, pageTop, slug, url;
+      var slug, url;
       e.preventDefault();
       slug = $(this).data('slug');
       url = $(this).attr('href');
-      $('nav .button a.selected').removeClass('selected');
+      history.pushState({
+        slug: slug
+      }, slug, url);
+      return handlePage(slug);
+    };
+    handlePage = function(slug) {
+      var $curPage, $curThings, $nextPage, abouting, pageTop;
       $curPage = $main.find('.page.show');
       $curThings = $curPage.find('article.thing');
       $nextPage = $('#' + slug);
       abouting = $about.is('.show');
-      history.pushState(null, slug, url);
+      $('nav .button a.selected').removeClass('selected');
       if (slug === 'about') {
         if (abouting) {
           $nav.find('a.' + $curPage.attr('id')).addClass('selected');
@@ -269,6 +282,16 @@
         height: $window.innerHeight()
       });
     };
+    onBrowserNav = function(e) {
+      var slug, state;
+      e.preventDefault();
+      state = history.state;
+      if (state) {
+        slug = state.slug;
+        console.log(slug);
+        return handlePage(slug);
+      }
+    };
     $main.on('mouseenter', '.thing .hover', hoverThing);
     $main.on('mouseleave', '.thing .hover', unhoverThing);
     $main.on('click', '.thing a.open', clickThing);
@@ -278,6 +301,7 @@
     $('nav .button a').on('mouseleave', unhoverNavLink);
     $wrapper.scroll(onScroll).scroll();
     $window.resize(resize).resize();
+    $(window).on('popstate', onBrowserNav);
     onLoad(page);
   });
 
