@@ -5,12 +5,12 @@ snippet( 'header' );
 	echo '<main>';
 		snippet( 'featured' );
 		echo '<section id="pages">';
-			$pages = array( 'music', 'shows', 'videos', 'posts' );
+			$pages = array( 'music', 'shows', 'videos', 'news' );
 			foreach( $pages as $index => $page ) {
 				echo '<div class="page" id="' . $page . '">';
 				echo '</div>';
 			}
 		echo '</section>';
+		snippet( 'footer' );
   echo '</main>';
-snippet( 'footer' )
 ?>

@@ -15,7 +15,7 @@ echo '<head>';
   echo js( 'assets/js/imagesloaded.pkgd.min.js' );
   echo js( 'assets/js/paper-full.min.js' );
   echo js( 'assets/js/scripts.js?version=' . date('mdYhis' ) );
-  echo '<script type="text/paperscript" src="assets/js/spotlight.js?version=' . date('mdYhis' ) . '" canvas="canvas"></script>';
+  echo '<script type="text/paperscript" src="' . kirby()->urls()->assets() . '/js/canvas.js?version=' . date('mdYhis' ) . '" canvas="canvas"></script>';
 
 echo '</head>';
 echo '<body data-root="' . url('/') . '" data-page="' . $page->slug() . '">';

@@ -7,8 +7,8 @@ email: coreytegeler@gmail.com
 language: en
 role: admin
 history:
-  - about
+  - music/onism
   - music/photay-ep
-  - music/bismillah-photay-remix
-  - music/season-2-episode-3-photay-remix
-  - music/sadie-ep
+  - news/new-album
+  - news
+  - about

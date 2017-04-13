@@ -1,16 +1,19 @@
 (function() {
   $(function() {
-    var $about, $body, $canvas, $featured, $home, $main, $nav, $photos, $spotlight, $window, $wrapper, canvas, changePhoto, clickNavLink, clickThing, closeThings, ease, handlePage, hoverNavLink, hoverThing, loadPage, maskPaper, onBrowserNav, onLoad, onScroll, openPage, page, resize, root, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
+    var $about, $black, $body, $canvas, $featured, $fixings, $footer, $home, $main, $nav, $pages, $window, $wrapper, changePhoto, clickAboutToggle, clickNavLink, clickThing, clickWrapper, closeThings, ease, handlePage, holdPlace, hoverNavLink, hoverThing, loadPage, onBrowserNav, onLoad, onScroll, openPage, page, resize, root, scrollNavLink, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $wrapper = $('#wrapper');
     $main = $('main');
+    $footer = $('footer');
     $about = $('#about');
     $featured = $('#featured');
+    $pages = $('#pages');
     $nav = $('nav');
     $home = $('#home');
-    $photos = $('#photos');
-    $spotlight = $('.spotlight');
+    $fixings = $('#fixings');
+    $black = $('#black');
+    $canvas = $('#canvas');
     root = $body.data('root');
     page = $body.data('page');
     transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd';
@@ -32,15 +35,12 @@
         });
       }
     });
-    maskPaper = new paper.PaperScope;
-    canvas = document.getElementById('canvas');
-    $canvas = $(canvas);
     changePhoto = function(e) {
       var $curPhoto, $nextPhoto;
-      $curPhoto = $('#photos .bg.show');
+      $curPhoto = $('#fixings .bg.show');
       $nextPhoto = $curPhoto.next();
       if (!$nextPhoto.length || !$nextPhoto.is('.bg')) {
-        $nextPhoto = $('#photos .bg').first();
+        $nextPhoto = $('#fixings .bg').first();
       }
       $curPhoto.removeClass('show');
       $nextPhoto.addClass('show');
@@ -61,7 +61,6 @@
     };
     toggleThing = function(thing) {
       var $mores, $siblings, $thing, savedHeight, thingTop, top;
-      console.log('!!');
       $thing = $(thing);
       $mores = $thing.find('.more');
       if (!$thing.is('.opened')) {
@@ -119,7 +118,9 @@
       $thing.removeClass('hidden');
       if ($siblings.length) {
         $siblings.filter(':not(.hover)').addClass('hidden');
-        return $('.hide').addClass('hidden');
+        if ($thing.find('.display').is('.image')) {
+          return $('.hide').addClass('hidden');
+        }
       }
     };
     unhoverThing = function(x) {
@@ -156,6 +157,11 @@
       }, slug, url);
       return handlePage(slug);
     };
+    scrollNavLink = function(e) {
+      var delta;
+      delta = e.originalEvent.deltaY;
+      return $wrapper.scrollTop($wrapper.scrollTop() + delta);
+    };
     handlePage = function(slug) {
       var $curPage, $curThings, $nextPage, abouting, pageTop;
       $curPage = $main.find('.page.show');
@@ -163,40 +169,30 @@
       $nextPage = $('#' + slug);
       abouting = $about.is('.show');
       $('nav .button a.selected').removeClass('selected');
-      if (slug === 'about') {
-        if (abouting) {
-          $nav.find('a.' + $curPage.attr('id')).addClass('selected');
-          return toggleAbout(false);
-        } else {
-          $nav.find('a.about').addClass('selected');
-          return toggleAbout(true);
-        }
+      $nav.find('a.' + slug).addClass('selected');
+      pageTop = $featured.offset().top + $featured.innerHeight() - 25;
+      $wrapper.animate({
+        scrollTop: pageTop + $wrapper.scrollTop()
+      }, 500);
+      if ($nextPage.is('.show')) {
+        return;
+      }
+      if (abouting) {
+        toggleAbout(false);
+        return openPage(slug);
       } else {
-        $nav.find('a.' + slug).addClass('selected');
-        pageTop = $featured.offset().top + $featured.innerHeight() - 25;
-        $wrapper.animate({
-          scrollTop: pageTop + $wrapper.scrollTop()
-        }, 500);
-        if ($nextPage.is('.show')) {
-          return;
-        }
-        if (abouting) {
-          toggleAbout(false);
-          return openPage(slug);
-        } else {
-          $curThings.removeClass('show');
-          return $curThings.eq(0).on(transEnd, function() {
-            openPage(slug);
-            return $curThings.eq(0).off(transEnd);
-          });
-        }
+        $curThings.removeClass('show');
+        return $curThings.eq(0).on(transEnd, function() {
+          openPage(slug);
+          return $curThings.eq(0).off(transEnd);
+        });
       }
     };
     hoverNavLink = function() {
-      return $photos.addClass('navigating');
+      return $fixings.addClass('navigating');
     };
     unhoverNavLink = function() {
-      return $photos.removeClass('navigating');
+      return $fixings.removeClass('navigating');
     };
     openPage = function(slug) {
       if (!$('#' + slug).is('.loaded')) {
@@ -227,25 +223,91 @@
       $('.page.show').removeClass('show');
       $page.addClass('show');
       $page.addClass('loaded');
+      holdPlace(slug);
       return $page.find('article.thing').each(function(i, thing) {
+        $(thing).addClass('show');
         return $(thing).imagesLoaded(function() {
-          return $(thing).addClass('show');
+          return $(thing).addClass('loaded');
         });
       });
     };
+    holdPlace = function() {
+      var $elems;
+      $elems = $('.page.show .thing .display.image');
+      return $elems.each(function(i, elem) {
+        var imgHeight, imgWidth, newHeight, ratio;
+        imgHeight = $(elem).data('height');
+        imgWidth = $(elem).data('width');
+        ratio = imgHeight / imgWidth;
+        newHeight = $(elem).innerWidth() * ratio;
+        return $(elem).css({
+          'height': newHeight
+        });
+      });
+    };
+    clickAboutToggle = function(e) {
+      e.preventDefault();
+      $('nav .button a.selected').removeClass('selected');
+      if ($about.attr('data-show') === 'true') {
+        return toggleAbout(false);
+      } else {
+        return toggleAbout(true);
+      }
+    };
     toggleAbout = function(show) {
+      var curPage, y;
       if (show) {
+        $canvas.addClass('hidden');
         $wrapper.addClass('no-scroll');
         $main.addClass('hidden');
-        return $about.addClass('show');
+        $black.data('y', $black.css('y'));
+        $about.attr('data-show', 'true');
+        $('#aboutToggle h3').text('X');
+        $nav.transition({
+          top: 0
+        }, 300);
+        return $black.transition({
+          y: 0
+        }, 500, function() {
+          if ($about.attr('data-show') === 'true') {
+            return $about.addClass('show');
+          }
+        });
       } else {
+        curPage = $main.find('.page.show').attr('id');
+        $nav.find('a.' + curPage).addClass('selected');
         $wrapper.removeClass('no-scroll');
         $main.removeClass('hidden');
-        return $about.removeClass('show');
+        $about.removeClass('show');
+        $about.attr('data-show', 'false');
+        $('#aboutToggle h3').text('?');
+        onScroll(null, 300);
+        if (y = $black.data('y')) {
+          return $black.transition({
+            y: y
+          }, 500, function() {
+            if ($about.attr('data-show') === 'false') {
+              return $canvas.removeClass('hidden');
+            }
+          });
+        }
+      }
+    };
+    clickWrapper = function(e) {
+      var $target;
+      $target = $(e.target);
+      if (!$target.is('a') && !$target.parents('a').length) {
+        if (e.offsetY <= $window.innerHeight()) {
+          return $wrapper.animate({
+            scrollTop: $window.innerHeight()
+          }, 500);
+        } else {
+          return changePhoto();
+        }
       }
     };
     onLoad = function(page) {
-      if (['music', 'shows', 'videos'].indexOf(page) >= 0) {
+      if (['music', 'shows', 'videos', 'news'].indexOf(page) >= 0) {
         $nav.find('a.' + page).addClass('selected');
         return openPage(page);
       } else if (page === 'about') {
@@ -257,30 +319,43 @@
         return openPage('music');
       }
     };
-    onScroll = function(e) {
-      var featuredBottom, mainBottom;
-      featuredBottom = $main.position().top + $featured.innerHeight();
-      mainBottom = $main.position().top + $main.innerHeight() - $window.innerHeight();
-      if (mainBottom <= 0) {
-        return $nav.css({
-          top: mainBottom
-        });
+    onScroll = function(e, dur) {
+      var blackY, featuredBottom, pagesEnd, scrollTop, top;
+      if (!dur) {
+        dur = 0;
+      }
+      scrollTop = $wrapper.scrollTop();
+      featuredBottom = $main.position().top + $featured.innerHeight() + $window.innerHeight();
+      pagesEnd = $pages.offset().top + $pages.innerHeight();
+      if (pagesEnd <= $window.innerHeight()) {
+        top = pagesEnd - $window.innerHeight();
+        $nav.transition({
+          top: top
+        }, dur);
       } else if (featuredBottom <= 0 || $about.is('.show')) {
-        return $nav.css({
+        $nav.transition({
           top: 0
-        });
+        }, dur);
       } else {
         $nav.removeClass('fixed');
-        return $nav.css({
+        $nav.transition({
           top: featuredBottom
-        });
+        }, dur);
       }
+      blackY = $(window).innerHeight() - scrollTop;
+      if (blackY <= 0) {
+        blackY = 0;
+      }
+      return $black.css({
+        y: blackY
+      });
     };
     resize = function() {
-      return $canvas.css({
+      $canvas.css({
         width: $window.innerWidth(),
         height: $window.innerHeight()
       });
+      return holdPlace();
     };
     onBrowserNav = function(e) {
       var slug, state;
@@ -288,17 +363,18 @@
       state = history.state;
       if (state) {
         slug = state.slug;
-        console.log(slug);
         return handlePage(slug);
       }
     };
     $main.on('mouseenter', '.thing .hover', hoverThing);
     $main.on('mouseleave', '.thing .hover', unhoverThing);
     $main.on('click', '.thing a.open', clickThing);
-    $('#photos').on('click', changePhoto);
+    $wrapper.on('click', clickWrapper);
     $('nav .button a').on('click', clickNavLink);
     $('nav .button a').on('mouseenter', hoverNavLink);
     $('nav .button a').on('mouseleave', unhoverNavLink);
+    $('nav .button a').on('mousewheel', scrollNavLink);
+    $('#aboutToggle').on('click', clickAboutToggle);
     $wrapper.scroll(onScroll).scroll();
     $window.resize(resize).resize();
     $(window).on('popstate', onBrowserNav);

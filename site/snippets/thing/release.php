@@ -8,8 +8,15 @@ if( $image = $release->art() ) {
 $title = $release->title();
 $type = $release->type();
 $links = $release->links();
-echo '<article class="thing ' . $parity . ( $type == 'release' ? ' large' : '' ) . '">';
-	echo '<div class="image">';
+if( $image ) {
+	$width = $image->width();
+	$height = $image->height();
+} else {
+	$width = null;
+	$height = null;
+}
+echo '<article class="thing ' . $parity . ( $type == 'release' ? ' large' : '' ) . '" data-type="release">';
+	echo '<div class="display ' . ( $image ? 'image' : 'text' ) . '" data-width="' . $width . '" data-height="' . $height . '">';
 		echo '<a href="#" class="hover release open">';
 			if( $image ) {
 				echo '<img src="' . $image->url() .  '"/>';

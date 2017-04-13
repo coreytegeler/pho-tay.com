@@ -24,7 +24,7 @@ fields:
     mode: single
     types: image
     featured:
-  label: Featured
+  featured: Featured
     type: toggle
     text: yes/no
     default: no

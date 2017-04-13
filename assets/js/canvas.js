@@ -1,5 +1,11 @@
 (function() {
-  var circle, circlePoint, root;
+  var $wrapper, circle, circlePoint, invert, logo, rect, root;
+
+  $wrapper = $('#wrapper');
+
+  rect = new Shape.Rectangle(0, 0, $(window).innerWidth(), $(window).innerHeight());
+
+  rect.fillColor = 'white';
 
   circlePoint = new Point(view.center.x, view.center.y);
 
@@ -11,7 +17,11 @@
 
   circle.fillColor = 'white';
 
+  circle.blendMode = 'difference';
+
   root = $('body').data('root');
+
+  logo = null;
 
   project.importSVG(root + '/assets/img/logo.svg', function(logo) {
     var logoPoint;
@@ -19,20 +29,25 @@
     logo.name = 'logo';
     logo.position = logoPoint;
     logo.fillColor = 'white';
-    $('#wrapper').addClass('loa');
-    return $('body').scroll(function(e) {
-      var scrollTop, winHeight;
-      scrollTop = $('body').scrollTop();
-      return winHeight = $('body').innerHeight();
-    }).scroll();
+    logo.blendMode = 'difference';
+    return $wrapper.addClass('loa');
   });
+
+  $wrapper.scroll(function(e) {
+    var scrollTop;
+    return scrollTop = $(this).scrollTop();
+  });
+
+  invert = null;
 
   view.onMouseMove = function(event) {
     return circlePoint = event.point;
   };
 
+  invert = new Group();
+
   view.onFrame = function(event) {
-    var circleDelta, logo, logoDelta;
+    var circleDelta, logoDelta, y;
     circleDelta = (circlePoint - circle.position) / 5;
     if (circleDelta.length > 0.1 && (logo = project.getItem({
       name: 'logo'
@@ -43,10 +58,23 @@
         y: (Math.abs(circle.position.y) - $(window).innerHeight()) * -1
       };
       logo.rotate((circleDelta.x + circleDelta.y) / 2);
-      return logo.position = logoDelta;
+      logo.position = logoDelta;
+      if (invert) {
+        invert.removeChildren();
+      }
+    }
+    rect.position.x = $(window).innerWidth() / 2;
+    rect.set({
+      size: [$(window).innerWidth(), $(window).innerHeight()]
+    });
+    if ($('#about').is('.show')) {
+      return rect.position.y = $(window).innerHeight() / 2;
+    } else {
+      y = -$wrapper.scrollTop() + $(window).innerHeight() / 2;
+      return rect.position.y = y;
     }
   };
 
 }).call(this);
 
-//# sourceMappingURL=spotlight.js.map
+//# sourceMappingURL=canvas.js.map

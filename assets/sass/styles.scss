@@ -13,6 +13,7 @@ html, body {
 	font-size: 18px;
 	line-height: 1.3em;
 	color: $light;
+	cursor: pointer;
 	::selection {
 		background: $light;
 		color: black;
@@ -31,6 +32,9 @@ html, body {
 	}
 	&.no-scroll {
 		overflow: hidden;
+		nav .inner .buttons .button a:hover h3 {
+			color: $light !important;
+		}
 	}
 }
 h1 {
@@ -68,12 +72,11 @@ p {
 }
 #home {
 	width: 100vw;
-	height: 101vh;
+	height: 100vh;
 	display: table;
 	z-index: 100;
 	overflow: hidden;
-	pointer-events: none;
-	position: relative;
+	// pointer-events: none;
 	nav {
 		position: absolute;
 		top: 0 !important;
@@ -81,85 +84,66 @@ p {
 			border-color: transparent !important;
 		}
 	}
-	.logo {
+}
+#fixings {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	cursor: pointer;
+	pointer-events: auto;
+	.bg {
+		width: 110%;
+		height: 110%;
+		position: absolute;
+		left: -5%;
+		top: -5%;
+		opacity: 0;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		&.show {
+			opacity: 1;
+		}
+		&.hide {
+			opacity: 0 !important;
+		}
+	}
+	&.navigating {
+		background-color: $light;
+		.bg {
+			// opacity: 0 !important;
+		}
+	}
+}
+.mask {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	mix-blend-mode: multiply;
+	#black {
 		width: 100%;
-		height: 100%;
+		height: 200%;
 		position: absolute;
 		left: 0;
 		top: 0;
-		z-index: 102;
-		overflow: hidden;
-		pointer-events: none;
-		display: flex;
-		align-items: center;
+		background-color: black;
+		transform: translateY(50vh);
+	}
+}
+canvas {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	transition: opacity 500ms $ease;
+	&.hidden {
+		// transition: none;
 		opacity: 0;
-		svg {
-			width: 10vw;
-			display: table;
-			margin: auto;
-			fill: $light;
-		}
-	}
-	#photos {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		left: 0;
-		top: 0;
-		cursor: pointer;
-		pointer-events: auto;
-		.bg {
-			width: 110%;
-			height: 110%;
-			position: absolute;
-			left: -5%;
-			top: -5%;
-			opacity: 0;
-			background-size: cover;
-			background-repeat: no-repeat;
-			background-position: center;
-			&.show {
-				opacity: 1;
-			}
-			&.hide {
-				opacity: 0 !important;
-			}
-		}
-		&.navigating {
-			background-color: $light;
-			.bg {
-				// opacity: 0 !important;
-			}
-		}
-	}
-	.spotlight {
-		width: 300vw;
-		height: 300vh;
-		position: fixed;
-		left: -150vw;
-		top: -150vh;
-		transform: translate3d(50vw, 50vh, 0);
-		transition: transform 100ms $ease;
-		display: flex;
-		align-content: center;
-		z-index: 102;
-		background-image: url(../img/spotlight.png);
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: cover;
-	}
-	.mask {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		left: 0;
-		top: 0;
-		mix-blend-mode: multiply;
-		canvas {
-			width: 100%;
-			height: 100%;
-			background-color: black;
-		}
 	}
 }
 main {
@@ -167,16 +151,18 @@ main {
 	height: 100%;
 	min-height: 100vh;
 	display: table;
-	z-index: 200;
-	padding: 0 0 25vh 0;
-	pointer-events: none;
+	padding: calc(100vh + 5em) 0 0 0;
 	position: relative;
 	mix-blend-mode: lighten;
 	transition: opacity 500ms $ease;
+	section {
+		pointer-events: none;
+	}
 	&.no-mix {
 		mix-blend-mode: normal;
 	}
 	&.hidden {
+		pointer-events: none;
 		opacity: 0;
 		a, img {
 			pointer-events: none !important;
@@ -190,8 +176,9 @@ nav {
 	left: calc(50% - 3vw);
   top: 100%;
   display: flex;
-  z-index: 100 !important;
+  z-index: 9999;
   transform: rotate(180deg);
+  pointer-events: none;
 	.inner {
 		width: calc(100vh - 1em);
 		height: 6vw;
@@ -218,6 +205,7 @@ nav {
 					h3 {
 						color: $light;
 						border-bottom: .15em solid transparent;
+						transition: border-color 300ms $ease !important;
 					}
 					&.selected {
 						h3 {
@@ -238,6 +226,19 @@ nav {
 	}
 	&.fixed {
 		// position: fixed;
+	}
+}
+#aboutToggle {
+	position: fixed;
+	right: 0;
+	top: 0;
+	color: $light;
+	z-index: 9999;
+	mix-blend-mode: difference;
+	h3 {
+		text-align: center;
+		line-height: 1em;
+		padding: .25em;
 	}
 }
 .links {
@@ -313,7 +314,6 @@ section {
 	transition: opacity 500ms $ease;
 	&#featured {
 		width: 100vw;
-		mix-blend-mode: lighten;
 		position: relative;
 		.thing {
 			min-height: 100vh;
@@ -322,7 +322,6 @@ section {
 			.image {
 				width: 60vw;
 				min-height: 60vw;
-				background: black;
 				position: relative;
 				a.open {
 					width: 100%;
@@ -345,8 +344,6 @@ section {
 			.info {
 				width: 40%;
 				display: flex;
-				background: black;
-				mix-blend-mode: lighten;
 				position: relative;
 				.center {
 					display: table;
@@ -379,8 +376,10 @@ section {
 		}
 	}
 	&#pages {
-		widows: 100%;
+		width: 100%;
 		min-height: 100vh;
+		margin-top: 10em;
+		padding-bottom: 10em;
 		.page {
 			width: 100%;
 			position: relative;
@@ -420,22 +419,38 @@ section {
 				display: flex;
 				transition: all 500ms $ease;
 				opacity: 0;
-				.image {
+				.display {
 					width: 30vw;
-					transition: opacity 300ms $ease;
+					transition: all 300ms $ease;
 					a.hover {
 						width: 100%;
 						display: table;
 						margin: auto;
 					}
-					img {
-						width: 100%;
-				    filter: grayscale(1);
-				    transition: filter 300ms $ease;
-				    pointer-events: auto;
+					&.image {
+						max-width: 100%;
+						position: relative;
+						.border {
+							width: calc(100% - .8em);
+							height: calc(100% - .8em);
+							position: absolute;
+							left: 0;
+							top: 0;
+							border: .4em solid $light;
+							transition: all 300ms $ease;
+						}
+						img {
+							width: 100%;
+					    filter: grayscale(1);
+					    transition: all 300ms $ease;
+					    pointer-events: auto;
+					    display: table;
+					    opacity: 0;
+						}
 					}
-					&.no {
+					&.text {
 						a.hover {
+							width: calc(100% - 1.8em);
 							border: .4em solid $light;
 							padding: .5em;
 						}
@@ -475,6 +490,16 @@ section {
 					transition: all 1000ms $ease;
 					opacity: 1;
 				}
+				&.loaded {
+					.display.image {
+						.border {
+							opacity: 0;
+						}
+						img {
+							opacity: 1;
+						}
+					}
+				}
 				&.hover {
 					mix-blend-mode: lighten;
 					z-index: 1000;
@@ -486,12 +511,12 @@ section {
 							pointer-events: auto !important;
 						}
 					}
-					img {
+					.display.image img {
 						filter: grayscale(0);
 					}
 				}
 				&.hidden:not(.hover) {
-					.image {
+					.display {
 						opacity: 0.1;
 					}
 					.info {
@@ -500,7 +525,7 @@ section {
 				}
 				&.even {
 					flex-direction: row;
-					.image {
+					.display {
 						margin-left: 10vw;
 						.links {
 							a {
@@ -522,15 +547,10 @@ section {
 				&.odd {
 					flex-direction: row-reverse;
 					// margin-bottom: -10em;
-					.image {
+					.display {
 						margin-right: 10vw;
 						a.hover {
 							float: right;
-						}
-						&.no {
-							a {
-								margin-right: calc(10vw - 1.8em);
-							}
 						}
 					}
 					.info {
@@ -554,6 +574,18 @@ section {
 						}
 					}
 				}
+				&[data-type="post"] {
+					.display.text a.hover {
+						width: calc(100%);
+						border: 0;
+						padding: .5em 0;
+						.border {
+							width: 100%;
+							direction: table;
+							border-top: .4em solid $light;
+						}
+					}
+				}
 			}
 			&.show {
 				display: table;
@@ -566,6 +598,7 @@ section {
 		position: fixed;
 		left: 0;
 		top: 0;
+		z-index: 999!important;
 		background-color: black; 
 		mix-blend-mode: lighten;
 		opacity: 0;
@@ -580,6 +613,9 @@ section {
 				padding: 2em;
 				a {
 					display: table;
+				}
+				p {
+					cursor: text;
 				}
 			}
 			&.left {
@@ -616,6 +652,7 @@ section {
 footer {
 	width: 100%;
 	height: 10em;
+	margin: 5em 0;
 	display: table;
 	background-image: url(../img/sadie.jpg);
 	background-repeat: no-repeat;

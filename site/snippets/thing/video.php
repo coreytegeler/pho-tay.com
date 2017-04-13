@@ -8,11 +8,23 @@ if( $image = $video->still() ) {
 $title = $video->title();
 $type = $video->type();
 $about = $video->about();
-echo '<article class="thing ' . $parity . ( $type == 'video' ? ' large' : '' ) . '">';
-	echo '<div class="image">';
-		echo '<a href="' . $video->link() . '" target="_blank" class="hover video open">';
+if( $image ) {
+	$width = $image->width();
+	$height = $image->height();
+} else {
+	$width = null;
+	$height = null;
+}
+echo '<article class="thing ' . $parity . ( $type == 'video' ? ' large' : '' ) . '" data-type="video">';
+	echo '<div class="display ' . ( $image ? 'image' : 'text' ) . '" data-width="' . $width . '" data-height="' . $height . '">';
+		echo '<a href="#" class="hover show open">';
 			if( $image ) {
 				echo '<img src="' . $image->url() .  '"/>';
+			} else {
+				echo '<h3>' . $title . '</h3>';
+				if( $date = $video->date( 'm.d.y' ) ) {
+					echo '<h4>' . $date . '</h4>';
+				}
 			}
 		echo '</a>';
 	echo '</div>';

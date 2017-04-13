@@ -1,4 +1,4 @@
-title: Posts
+title: Post
 
 pages: false
 
@@ -6,6 +6,11 @@ fields:
   title:
     label: Title
     type:  title
+    width: 1/2
+  date:
+    label: Date
+    type:  date
+    width: 1/2
   text:
     label: Text
     type: wysiwyg

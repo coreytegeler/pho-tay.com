@@ -8,11 +8,19 @@ if( $image = $show->flier() ) {
 $title = $show->title();
 $type = $show->type();
 $about = $show->about();
-echo '<article class="thing ' . $parity . '">';
-	echo '<div class="image ' . ( $image ? '' : 'no' ) . '">';
+if( $image ) {
+	$width = $image->width();
+	$height = $image->height();
+} else {
+	$width = null;
+	$height = null;
+}
+echo '<article class="thing ' . $parity . '" data-type="show">';
+	echo '<div class="display ' . ( $image ? 'image' : 'text' ) . '" data-width="' . $width . '" data-height="' . $height . '">';
 		echo '<a href="#" class="hover show open">';
 			if( $image ) {
 				echo '<img src="' . $image->url() .  '"/>';
+				echo '<div class="border"></div>';
 			} else {
 				echo '<h3>' . $title . '</h3>';
 				if( $date = $show->date( 'm.d.y' ) ) {

@@ -3,12 +3,15 @@ $ ->
 	$body = $('body')
 	$wrapper = $('#wrapper')
 	$main = $('main')
+	$footer = $('footer')
 	$about = $('#about')
 	$featured = $('#featured')
+	$pages = $('#pages')
 	$nav = $('nav')
 	$home = $('#home')
-	$photos = $('#photos')
-	$spotlight = $('.spotlight')
+	$fixings = $('#fixings')
+	$black = $('#black')
+	$canvas = $('#canvas')
 	root = $body.data('root')
 	page = $body.data('page')
 	transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd'
@@ -26,15 +29,11 @@ $ ->
 					$wrapper.addClass('ded')
 					$bg.addClass('show')
 
-	maskPaper = new (paper.PaperScope)
-	canvas = document.getElementById('canvas')
-	$canvas = $(canvas)
-
 	changePhoto = (e) ->
-		$curPhoto = $('#photos .bg.show')
+		$curPhoto = $('#fixings .bg.show')
 		$nextPhoto = $curPhoto.next()
 		if !$nextPhoto.length || !$nextPhoto.is('.bg')
-			$nextPhoto = $('#photos .bg').first()	
+			$nextPhoto = $('#fixings .bg').first()	
 		$curPhoto.removeClass('show')
 		$nextPhoto.addClass('show')
 		closeThings()
@@ -50,7 +49,6 @@ $ ->
 			closeThings()
 
 	toggleThing = (thing) ->
-		console.log '!!'
 		$thing = $(thing)
 		$mores = $thing.find('.more')
 		if !$thing.is('.opened')
@@ -95,10 +93,12 @@ $ ->
 		if $thing.is('.opened') || $siblings.filter('.opened').length
 			return
 		$thing.addClass('hover')
+
 		$thing.removeClass('hidden')
 		if $siblings.length
 			$siblings.filter(':not(.hover)').addClass('hidden')
-			$('.hide').addClass('hidden')
+			if $thing.find('.display').is('.image')
+				$('.hide').addClass('hidden')
 
 	unhoverThing = (x) ->
 		if($(x).is('.thing'))
@@ -126,41 +126,37 @@ $ ->
 		history.pushState({slug:slug}, slug, url)
 		handlePage(slug)
 
+	scrollNavLink = (e) ->
+		delta = e.originalEvent.deltaY
+		$wrapper.scrollTop($wrapper.scrollTop() + delta)
+
 	handlePage = (slug) ->
 		$curPage = $main.find('.page.show')
 		$curThings = $curPage.find('article.thing')
 		$nextPage = $('#'+slug)
 		abouting = $about.is('.show')
 		$('nav .button a.selected').removeClass('selected')
-		if slug == 'about'
-			if abouting
-				$nav.find('a.'+$curPage.attr('id')).addClass('selected')
-				toggleAbout(false)
-			else
-				$nav.find('a.about').addClass('selected')
-				toggleAbout(true)
+		$nav.find('a.'+slug).addClass('selected')
+		pageTop = $featured.offset().top + $featured.innerHeight() - 25
+		$wrapper.animate
+			scrollTop: pageTop + $wrapper.scrollTop()
+		, 500
+		if $nextPage.is('.show')
+			return
+		if abouting
+			toggleAbout(false)
+			openPage(slug)
 		else
-			$nav.find('a.'+slug).addClass('selected')
-			pageTop = $featured.offset().top + $featured.innerHeight() - 25
-			$wrapper.animate
-				scrollTop: pageTop + $wrapper.scrollTop()
-			, 500
-			if $nextPage.is('.show')
-				return
-			if abouting
-				toggleAbout(false)
+			$curThings.removeClass('show')
+			$curThings.eq(0).on transEnd, () ->
 				openPage(slug)
-			else
-				$curThings.removeClass('show')
-				$curThings.eq(0).on transEnd, () ->
-					openPage(slug)
-					$curThings.eq(0).off(transEnd)
+				$curThings.eq(0).off(transEnd)
 
 	hoverNavLink = () ->
-		$photos.addClass('navigating')
+		$fixings.addClass('navigating')
 
 	unhoverNavLink = () ->
-		$photos.removeClass('navigating')
+		$fixings.removeClass('navigating')
 
 	openPage = (slug) ->
 		if !$('#'+slug).is('.loaded')
@@ -185,22 +181,74 @@ $ ->
 		$('.page.show').removeClass('show')
 		$page.addClass('show')
 		$page.addClass('loaded')
+		holdPlace(slug)
 		$page.find('article.thing').each (i, thing) ->
+			$(thing).addClass('show')
 			$(thing).imagesLoaded () ->
-				$(thing).addClass('show')
+				$(thing).addClass('loaded')
+
+	holdPlace = () ->
+		$elems = $('.page.show .thing .display.image')
+		$elems.each (i, elem) ->
+			imgHeight = $(elem).data('height')
+			imgWidth = $(elem).data('width')
+			ratio = imgHeight/imgWidth
+			newHeight = $(elem).innerWidth()*ratio
+			$(elem).css
+				'height': newHeight
+
+	clickAboutToggle = (e) ->
+		e.preventDefault()
+		$('nav .button a.selected').removeClass('selected')
+		if $about.attr('data-show') == 'true'
+			toggleAbout(false)
+		else
+			toggleAbout(true)
 
 	toggleAbout = (show) ->
 		if show
+			$canvas.addClass('hidden')
 			$wrapper.addClass('no-scroll')
 			$main.addClass('hidden')
-			$about.addClass('show')
+			$black.data('y', $black.css('y'))
+			$about.attr('data-show', 'true')
+			$('#aboutToggle h3').text('X')
+			$nav.transition
+				top: 0
+			, 300
+			$black.transition
+				y: 0
+			, 500, () ->
+				if $about.attr('data-show') == 'true'
+					$about.addClass('show')
 		else
+			curPage = $main.find('.page.show').attr('id')
+			$nav.find('a.'+curPage).addClass('selected')
 			$wrapper.removeClass('no-scroll')
 			$main.removeClass('hidden')
 			$about.removeClass('show')
+			$about.attr('data-show', 'false')
+			$('#aboutToggle h3').text('?')
+			onScroll(null, 300)
+			if y = $black.data('y')
+				$black.transition
+					y: y
+				, 500 , () ->
+					if $about.attr('data-show') == 'false'
+						$canvas.removeClass('hidden')
+
+	clickWrapper = (e) ->
+		$target = $(e.target)
+		if !$target.is('a') && !$target.parents('a').length
+			if e.offsetY <= $window.innerHeight()
+				$wrapper.animate
+					scrollTop: $window.innerHeight()
+				, 500
+			else
+				changePhoto()
 
 	onLoad = (page) ->
-		if ['music', 'shows', 'videos'].indexOf(page) >= 0
+		if ['music', 'shows', 'videos', 'news'].indexOf(page) >= 0
 			$nav.find('a.'+page).addClass('selected')
 			openPage(page)
 		else if page == 'about'
@@ -211,40 +259,55 @@ $ ->
 			$nav.find('a.music').addClass('selected')
 			openPage('music')
 
-	onScroll = (e) ->
-		featuredBottom = $main.position().top + $featured.innerHeight()
-		mainBottom = $main.position().top + $main.innerHeight() - $window.innerHeight()
-		if mainBottom <= 0
-			$nav.css
-				top: mainBottom
+	onScroll = (e, dur) ->
+		if !dur
+			dur = 0
+		scrollTop = $wrapper.scrollTop()
+		featuredBottom = $main.position().top + $featured.innerHeight() + $window.innerHeight()
+		pagesEnd = $pages.offset().top + $pages.innerHeight()
+		if pagesEnd <= $window.innerHeight()
+			top = pagesEnd - $window.innerHeight()
+			$nav.transition
+				top: top
+			, dur
 		else if featuredBottom <= 0 || $about.is('.show') 
-			$nav.css
+			$nav.transition
 				top: 0
+			, dur
 		else
 			$nav.removeClass('fixed')
-			$nav.css
+			$nav.transition
 				top: featuredBottom
+			, dur
+
+		blackY = $(window).innerHeight() - scrollTop
+		if blackY <= 0
+			blackY = 0
+		$black.css
+			y: blackY
 	
 	resize = () ->
 		$canvas.css
 			width: $window.innerWidth(),
 			height: $window.innerHeight()
+		holdPlace()
 
 	onBrowserNav = (e) ->
 		e.preventDefault()
 		state = history.state
 		if state
 			slug = state.slug
-			console.log slug
 			handlePage(slug)
 
 	$main.on 'mouseenter', '.thing .hover', hoverThing
 	$main.on 'mouseleave', '.thing .hover', unhoverThing
 	$main.on 'click', '.thing a.open', clickThing
-	$('#photos').on 'click', changePhoto
+	$wrapper.on 'click', clickWrapper
 	$('nav .button a').on 'click', clickNavLink
 	$('nav .button a').on 'mouseenter', hoverNavLink
 	$('nav .button a').on 'mouseleave', unhoverNavLink
+	$('nav .button a').on 'mousewheel', scrollNavLink
+	$('#aboutToggle').on 'click', clickAboutToggle
 	$wrapper.scroll(onScroll).scroll()
 	$window.resize(resize).resize()
 	$(window).on 'popstate', onBrowserNav

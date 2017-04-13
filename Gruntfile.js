@@ -38,7 +38,7 @@ module.exports = function(grunt) {
 			compile: {
 				files: {
 					'assets/js/scripts.js': 'assets/coffee/scripts.coffee',
-					'assets/js/spotlight.js': 'assets/coffee/spotlight.coffee'
+					'assets/js/canvas.js': 'assets/coffee/canvas.coffee'
 				},
 				options: {
 					sourceMap: true
