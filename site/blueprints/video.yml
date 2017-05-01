@@ -26,12 +26,15 @@ fields:
     label: Link
     type: text
     width: 1/2
+  embed:
+    label: Embed
+    type: text
+    width: 1/2
   still:
     label: Still Frame
     type: selector
     mode: single
     types: image
-    width: 1/2
   featured:
     label: Featured
     type: toggle

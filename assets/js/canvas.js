@@ -30,7 +30,7 @@
     logo.position = logoPoint;
     logo.fillColor = 'white';
     logo.blendMode = 'difference';
-    return $wrapper.addClass('loa');
+    return $(paper.view.element).addClass('loaded');
   });
 
   $wrapper.scroll(function(e) {

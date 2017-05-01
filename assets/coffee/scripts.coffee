@@ -26,7 +26,6 @@ $ ->
 				$bg.css
 					'backgroundImage': 'url('+image.target.src+')'
 				if(i == 0)
-					$wrapper.addClass('ded')
 					$bg.addClass('show')
 
 	changePhoto = (e) ->
@@ -50,52 +49,92 @@ $ ->
 
 	toggleThing = (thing) ->
 		$thing = $(thing)
+		page = $thing.parents('.page').attr('id')
+		slug = $thing.attr('data-slug')
+		$group = $thing.parents('.group')
 		$mores = $thing.find('.more')
+		$embeds = $thing.find('.embed')
 		if !$thing.is('.opened')
 			hoverThing($thing)
 			$thing.addClass('opened')
-			thingTop = $thing.offset().top + $wrapper.scrollTop() - 25
-			$wrapper.animate
-				scrollTop: thingTop
-			, 500
+			if !$group.is('.half')
+				thingTop = $thing.offset().top + $wrapper.scrollTop() - 25
+				$wrapper.animate
+					scrollTop: thingTop
+				, 500
 			savedHeight = 0
-			$mores.each () ->
-				$more = $(this)
-				$inner = $more.find('.inner')
-				if $inner.html().length
-					height = $inner.innerHeight()
-					if height > savedHeight
-						savedHeight = height
-					$more.transition
-						height: height
-					, 400, ease
-			top = $thing.innerHeight() + $thing.offset().top + savedHeight
+			$embeds.each (i, embed) ->
+				$embed = $(embed)
+				$.ajax
+					url: root+'/api?page='+page+'&slug='+slug
+					dataType: 'html'
+					error: (jqXHR, status, err) ->
+						console.log(jqXHR, status, err)
+					success: (embed, status, jqXHR) ->
+						if !$embed.html().length
+							$embed.append(embed)
+						if $thing.is('.video')
+							$parent = $embed.parents('.display')
+							$parent.addClass('play')
+						else
+							$parent = $embed.parents('.more .inner')
+							$embed.addClass('show')
+						newHeight = $embed.innerHeight()
+						$parent.css
+							height: newHeight
+						resizeVideo()
+						$group.masonry('layout')
+
+						$mores.each () ->
+							$more = $(this)
+							$inner = $more.find('.inner')
+							if $inner.html().length
+								height = $inner.innerHeight()
+								if height > savedHeight
+									savedHeight = height
+								$more.css
+									height: height
+								$group.masonry('layout')
 		else
-			$siblings = $thing.parents('.page').find('.thing').not($thing)
+			$group = $thing.parents('.group')
+			$siblings = $group.find('.thing')
 			$thing.removeClass('opened')
 			$mores.each () ->
 				$more = $(this)
-				$more.transition
-					height: 0
-				, 600, ease
-			setTimeout () ->
-				$siblings.removeClass('hidden')
-			, 600
-				
+				$embed = $more.find('.embed')
+				setTimeout () ->
+					$more.css
+						height: 0
+				, 400
+				$group.masonry('layout')
+				if $embed.length && !$thing.is('.opened')
+					$embed.removeClass('show')
+					setTimeout () ->
+						if !$thing.is('.opened')
+							$embed.html('')
+					, 400
+
+			$embeds.each (i, embed) ->
+				$embed = $(embed)
+				$display = $embed.parents('.display')
+				$display.removeClass('play')
+				$display.css
+					height: 'auto'
+
 	hoverThing = (x) ->
 		if($(x).is('.thing'))
 			$thing = $(x)
 		else
 			$target = $(x.target)
 			$thing = $target.parents('.thing')
-		$page = $thing.parents('.page')
-		$siblings = $page.find('.thing')
+		$group = $thing.parents('.group')
+		$siblings = $group.find('.thing')
 		if $thing.is('.opened') || $siblings.filter('.opened').length
 			return
 		$thing.addClass('hover')
 
 		$thing.removeClass('hidden')
-		if $siblings.length
+		if $siblings.length && !$group.is('.half')
 			$siblings.filter(':not(.hover)').addClass('hidden')
 			if $thing.find('.display').is('.image')
 				$('.hide').addClass('hidden')
@@ -106,11 +145,12 @@ $ ->
 		else
 			$target = $(x.target)
 			$thing = $target.parents('.thing')
-		$siblings = $thing.parents('.page').find('.thing')
+		$group = $thing.parents('.group')
+		$siblings = $group.find('.thing')
 		if $thing.is('.opened') || $siblings.filter('.opened').length
 			return
 		$thing.removeClass('hover')
-		if(!$('.page .thing.hover').length)
+		if !$('.page .thing.hover').length && !$group.is('.half')
 			$('.hide').removeClass('hidden')
 			$siblings.removeClass('hidden')
 
@@ -132,12 +172,12 @@ $ ->
 
 	handlePage = (slug) ->
 		$curPage = $main.find('.page.show')
-		$curThings = $curPage.find('article.thing')
+		$curThings = $curPage.find('.thing')
 		$nextPage = $('#'+slug)
 		abouting = $about.is('.show')
 		$('nav .button a.selected').removeClass('selected')
 		$nav.find('a.'+slug).addClass('selected')
-		pageTop = $featured.offset().top + $featured.innerHeight() - 25
+		pageTop = $pages.offset().top
 		$wrapper.animate
 			scrollTop: pageTop + $wrapper.scrollTop()
 		, 500
@@ -182,20 +222,38 @@ $ ->
 		$page.addClass('show')
 		$page.addClass('loaded')
 		holdPlace(slug)
-		$page.find('article.thing').each (i, thing) ->
+
+		$page.find('.grid').masonry
+		  itemSelector: '.thing',
+		  percentPosition: true,
+		  transitionDuration: 0
+
+		$page.find('.thing').each (i, thing) ->
 			$(thing).addClass('show')
 			$(thing).imagesLoaded () ->
 				$(thing).addClass('loaded')
+				$(thing).find('.display.image').css
+					height: 'auto'
+				$page.find('.grid').masonry('layout')
+				defineSide(thing)
 
 	holdPlace = () ->
-		$elems = $('.page.show .thing .display.image')
-		$elems.each (i, elem) ->
-			imgHeight = $(elem).data('height')
-			imgWidth = $(elem).data('width')
+		$displays = $('.page.show .thing .display.image:not(.play)')
+		$displays.each (i, display) ->
+			imgHeight = $(display).data('height')
+			imgWidth = $(display).data('width')
 			ratio = imgHeight/imgWidth
-			newHeight = $(elem).innerWidth()*ratio
-			$(elem).css
+			newHeight = $(display).innerWidth()*ratio
+			$(display).css
 				'height': newHeight
+
+	defineSide = (thing) ->
+		$(thing).removeClass('left').removeClass('right')
+		if parseInt($(thing).css('left')) == 0
+			$(thing).addClass('left')
+		else 
+			$(thing).addClass('right')
+
 
 	clickAboutToggle = (e) ->
 		e.preventDefault()
@@ -239,13 +297,24 @@ $ ->
 
 	clickWrapper = (e) ->
 		$target = $(e.target)
-		if !$target.is('a') && !$target.parents('a').length
-			if e.offsetY <= $window.innerHeight()
-				$wrapper.animate
-					scrollTop: $window.innerHeight()
-				, 500
-			else
-				changePhoto()
+		if $target.is('#top')
+			$wrapper.animate
+				scrollTop: $window.innerHeight()
+			, 500
+		else if !$target.is('a') && !$target.parents('a').length
+			changePhoto()
+
+	resizeVideo = () ->
+		$('.embed iframe').each (i, iframe) ->
+			$iframe = $(iframe)
+			$embed = $iframe.parents('.embed')
+			width = $iframe.attr('width')
+			height = $iframe.attr('height')
+			ratio = width/height
+			embedWidth = $embed.innerWidth()
+			newHeight = embedWidth/ratio
+			$iframe.css
+				height: newHeight
 
 	onLoad = (page) ->
 		if ['music', 'shows', 'videos', 'news'].indexOf(page) >= 0
@@ -253,11 +322,11 @@ $ ->
 			openPage(page)
 		else if page == 'about'
 			$nav.find('a.about').addClass('selected')
-			openPage('music')
+			openPage('home')
 			toggleAbout(true)
 		else
-			$nav.find('a.music').addClass('selected')
-			openPage('music')
+			$nav.find('a.home').addClass('selected')
+			openPage('home')
 
 	onScroll = (e, dur) ->
 		if !dur
@@ -291,6 +360,10 @@ $ ->
 			width: $window.innerWidth(),
 			height: $window.innerHeight()
 		holdPlace()
+		resizeVideo()
+		$('.page.show .thing').each (i, thing) ->
+			defineSide(thing)
+
 
 	onBrowserNav = (e) ->
 		e.preventDefault()

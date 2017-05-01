@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var $about, $black, $body, $canvas, $featured, $fixings, $footer, $home, $main, $nav, $pages, $window, $wrapper, changePhoto, clickAboutToggle, clickNavLink, clickThing, clickWrapper, closeThings, ease, handlePage, holdPlace, hoverNavLink, hoverThing, loadPage, onBrowserNav, onLoad, onScroll, openPage, page, resize, root, scrollNavLink, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
+    var $about, $black, $body, $canvas, $featured, $fixings, $footer, $home, $main, $nav, $pages, $window, $wrapper, changePhoto, clickAboutToggle, clickNavLink, clickThing, clickWrapper, closeThings, defineSide, ease, handlePage, holdPlace, hoverNavLink, hoverThing, loadPage, onBrowserNav, onLoad, onScroll, openPage, page, resize, resizeVideo, root, scrollNavLink, showPage, toggleAbout, toggleThing, transEnd, unhoverNavLink, unhoverThing;
     $window = $(window);
     $body = $('body');
     $wrapper = $('#wrapper');
@@ -29,7 +29,6 @@
             'backgroundImage': 'url(' + image.target.src + ')'
           });
           if (i === 0) {
-            $wrapper.addClass('ded');
             return $bg.addClass('show');
           }
         });
@@ -60,63 +59,118 @@
       }
     };
     toggleThing = function(thing) {
-      var $mores, $siblings, $thing, savedHeight, thingTop, top;
+      var $embeds, $group, $mores, $siblings, $thing, savedHeight, slug, thingTop;
       $thing = $(thing);
+      page = $thing.parents('.page').attr('id');
+      slug = $thing.attr('data-slug');
+      $group = $thing.parents('.group');
       $mores = $thing.find('.more');
+      $embeds = $thing.find('.embed');
       if (!$thing.is('.opened')) {
         hoverThing($thing);
         $thing.addClass('opened');
-        thingTop = $thing.offset().top + $wrapper.scrollTop() - 25;
-        $wrapper.animate({
-          scrollTop: thingTop
-        }, 500);
+        if (!$group.is('.half')) {
+          thingTop = $thing.offset().top + $wrapper.scrollTop() - 25;
+          $wrapper.animate({
+            scrollTop: thingTop
+          }, 500);
+        }
         savedHeight = 0;
-        $mores.each(function() {
-          var $inner, $more, height;
-          $more = $(this);
-          $inner = $more.find('.inner');
-          if ($inner.html().length) {
-            height = $inner.innerHeight();
-            if (height > savedHeight) {
-              savedHeight = height;
+        return $embeds.each(function(i, embed) {
+          var $embed;
+          $embed = $(embed);
+          return $.ajax({
+            url: root + '/api?page=' + page + '&slug=' + slug,
+            dataType: 'html',
+            error: function(jqXHR, status, err) {
+              return console.log(jqXHR, status, err);
+            },
+            success: function(embed, status, jqXHR) {
+              var $parent, newHeight;
+              if (!$embed.html().length) {
+                $embed.append(embed);
+              }
+              if ($thing.is('.video')) {
+                $parent = $embed.parents('.display');
+                $parent.addClass('play');
+              } else {
+                $parent = $embed.parents('.more .inner');
+                $embed.addClass('show');
+              }
+              newHeight = $embed.innerHeight();
+              $parent.css({
+                height: newHeight
+              });
+              resizeVideo();
+              $group.masonry('layout');
+              return $mores.each(function() {
+                var $inner, $more, height;
+                $more = $(this);
+                $inner = $more.find('.inner');
+                if ($inner.html().length) {
+                  height = $inner.innerHeight();
+                  if (height > savedHeight) {
+                    savedHeight = height;
+                  }
+                  $more.css({
+                    height: height
+                  });
+                  return $group.masonry('layout');
+                }
+              });
             }
-            return $more.transition({
-              height: height
-            }, 400, ease);
-          }
+          });
         });
-        return top = $thing.innerHeight() + $thing.offset().top + savedHeight;
       } else {
-        $siblings = $thing.parents('.page').find('.thing').not($thing);
+        $group = $thing.parents('.group');
+        $siblings = $group.find('.thing');
         $thing.removeClass('opened');
         $mores.each(function() {
-          var $more;
+          var $embed, $more;
           $more = $(this);
-          return $more.transition({
-            height: 0
-          }, 600, ease);
+          $embed = $more.find('.embed');
+          setTimeout(function() {
+            return $more.css({
+              height: 0
+            });
+          }, 400);
+          $group.masonry('layout');
+          if ($embed.length && !$thing.is('.opened')) {
+            $embed.removeClass('show');
+            return setTimeout(function() {
+              if (!$thing.is('.opened')) {
+                return $embed.html('');
+              }
+            }, 400);
+          }
         });
-        return setTimeout(function() {
-          return $siblings.removeClass('hidden');
-        }, 600);
+        return $embeds.each(function(i, embed) {
+          var $display, $embed;
+          $embed = $(embed);
+          $display = $embed.parents('.display');
+          $display.removeClass('play');
+          return $display.css({
+            height: 'auto'
+          });
+        });
       }
     };
     hoverThing = function(x) {
-      var $page, $siblings, $target, $thing;
+      var $group, $siblings, $target, $thing;
       if ($(x).is('.thing')) {
         $thing = $(x);
       } else {
         $target = $(x.target);
         $thing = $target.parents('.thing');
       }
-      $page = $thing.parents('.page');
-      $siblings = $page.find('.thing');
+      $group = $thing.parents('.group');
+      $siblings = $group.find('.thing');
       if ($thing.is('.opened') || $siblings.filter('.opened').length) {
         return;
       }
       $thing.addClass('hover');
       $thing.removeClass('hidden');
-      if ($siblings.length) {
+      if ($siblings.length && !$group.is('.half')) {
         $siblings.filter(':not(.hover)').addClass('hidden');
         if ($thing.find('.display').is('.image')) {
           return $('.hide').addClass('hidden');
@@ -124,19 +178,20 @@
       }
     };
     unhoverThing = function(x) {
-      var $siblings, $target, $thing;
+      var $group, $siblings, $target, $thing;
       if ($(x).is('.thing')) {
         $thing = $(x);
       } else {
         $target = $(x.target);
         $thing = $target.parents('.thing');
       }
-      $siblings = $thing.parents('.page').find('.thing');
+      $group = $thing.parents('.group');
+      $siblings = $group.find('.thing');
       if ($thing.is('.opened') || $siblings.filter('.opened').length) {
         return;
       }
       $thing.removeClass('hover');
-      if (!$('.page .thing.hover').length) {
+      if (!$('.page .thing.hover').length && !$group.is('.half')) {
         $('.hide').removeClass('hidden');
         return $siblings.removeClass('hidden');
       }
@@ -165,12 +220,12 @@
     handlePage = function(slug) {
       var $curPage, $curThings, $nextPage, abouting, pageTop;
       $curPage = $main.find('.page.show');
-      $curThings = $curPage.find('article.thing');
+      $curThings = $curPage.find('.thing');
       $nextPage = $('#' + slug);
       abouting = $about.is('.show');
       $('nav .button a.selected').removeClass('selected');
       $nav.find('a.' + slug).addClass('selected');
-      pageTop = $featured.offset().top + $featured.innerHeight() - 25;
+      pageTop = $pages.offset().top;
       $wrapper.animate({
         scrollTop: pageTop + $wrapper.scrollTop()
       }, 500);
@@ -224,26 +279,44 @@
       $page.addClass('show');
       $page.addClass('loaded');
       holdPlace(slug);
-      return $page.find('article.thing').each(function(i, thing) {
+      $page.find('.grid').masonry({
+        itemSelector: '.thing',
+        percentPosition: true,
+        transitionDuration: 0
+      });
+      return $page.find('.thing').each(function(i, thing) {
         $(thing).addClass('show');
         return $(thing).imagesLoaded(function() {
-          return $(thing).addClass('loaded');
+          $(thing).addClass('loaded');
+          $(thing).find('.display.image').css({
+            height: 'auto'
+          });
+          $page.find('.grid').masonry('layout');
+          return defineSide(thing);
         });
       });
     };
     holdPlace = function() {
-      var $elems;
-      $elems = $('.page.show .thing .display.image');
-      return $elems.each(function(i, elem) {
+      var $displays;
+      $displays = $('.page.show .thing .display.image:not(.play)');
+      return $displays.each(function(i, display) {
         var imgHeight, imgWidth, newHeight, ratio;
-        imgHeight = $(elem).data('height');
-        imgWidth = $(elem).data('width');
+        imgHeight = $(display).data('height');
+        imgWidth = $(display).data('width');
         ratio = imgHeight / imgWidth;
-        newHeight = $(elem).innerWidth() * ratio;
-        return $(elem).css({
+        newHeight = $(display).innerWidth() * ratio;
+        return $(display).css({
           'height': newHeight
         });
       });
+    };
+    defineSide = function(thing) {
+      $(thing).removeClass('left').removeClass('right');
+      if (parseInt($(thing).css('left')) === 0) {
+        return $(thing).addClass('left');
+      } else {
+        return $(thing).addClass('right');
+      }
     };
     clickAboutToggle = function(e) {
       e.preventDefault();
@@ -296,15 +369,28 @@
     clickWrapper = function(e) {
       var $target;
       $target = $(e.target);
-      if (!$target.is('a') && !$target.parents('a').length) {
-        if (e.offsetY <= $window.innerHeight()) {
-          return $wrapper.animate({
-            scrollTop: $window.innerHeight()
-          }, 500);
-        } else {
-          return changePhoto();
-        }
+      if ($target.is('#top')) {
+        return $wrapper.animate({
+          scrollTop: $window.innerHeight()
+        }, 500);
+      } else if (!$target.is('a') && !$target.parents('a').length) {
+        return changePhoto();
       }
+    };
+    resizeVideo = function() {
+      return $('.embed iframe').each(function(i, iframe) {
+        var $embed, $iframe, embedWidth, height, newHeight, ratio, width;
+        $iframe = $(iframe);
+        $embed = $iframe.parents('.embed');
+        width = $iframe.attr('width');
+        height = $iframe.attr('height');
+        ratio = width / height;
+        embedWidth = $embed.innerWidth();
+        newHeight = embedWidth / ratio;
+        return $iframe.css({
+          height: newHeight
+        });
+      });
     };
     onLoad = function(page) {
       if (['music', 'shows', 'videos', 'news'].indexOf(page) >= 0) {
@@ -312,11 +398,11 @@
         return openPage(page);
       } else if (page === 'about') {
         $nav.find('a.about').addClass('selected');
-        openPage('music');
+        openPage('home');
         return toggleAbout(true);
       } else {
-        $nav.find('a.music').addClass('selected');
-        return openPage('music');
+        $nav.find('a.home').addClass('selected');
+        return openPage('home');
       }
     };
     onScroll = function(e, dur) {
@@ -355,7 +441,11 @@
         width: $window.innerWidth(),
         height: $window.innerHeight()
       });
-      return holdPlace();
+      holdPlace();
+      resizeVideo();
+      return $('.page.show .thing').each(function(i, thing) {
+        return defineSide(thing);
+      });
     };
     onBrowserNav = function(e) {
       var slug, state;

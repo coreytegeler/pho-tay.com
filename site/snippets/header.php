@@ -14,6 +14,7 @@ echo '<head>';
   echo js( 'assets/js/jquery.transit.js' );
   echo js( 'assets/js/imagesloaded.pkgd.min.js' );
   echo js( 'assets/js/paper-full.min.js' );
+  echo js( 'assets/js/masonry.pkgd.min.js' );
   echo js( 'assets/js/scripts.js?version=' . date('mdYhis' ) );
   echo '<script type="text/paperscript" src="' . kirby()->urls()->assets() . '/js/canvas.js?version=' . date('mdYhis' ) . '" canvas="canvas"></script>';
 

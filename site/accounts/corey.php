@@ -7,8 +7,8 @@ email: coreytegeler@gmail.com
 language: en
 role: admin
 history:
-  - music/onism
+  - videos/boiler-room-brownswood
+  - videos/monday
+  - music/season-2-episode-3-photay-remix
   - music/photay-ep
   - news/new-album
-  - news
-  - about

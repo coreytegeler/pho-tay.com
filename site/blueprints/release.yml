@@ -35,23 +35,27 @@ fields:
     label: Label
     type: text
     width: 1/2
-  tracks:
-    label: Tracks
-    type: builder
-    fieldsets:
-      track:
-        label: Track
-        entry: >
-          {{_title}}
-        fields:
-          _title:
-            label: Title
-            type: text
-            width: 1/2
-          _length:
-            label: Length
-            type: text
-            width: 1/2
+  embed:
+    label: Embed
+    type: text
+    width: 1/2
+  # tracks:
+  #   label: Tracks
+  #   type: builder
+  #   fieldsets:
+  #     track:
+  #       label: Track
+  #       entry: >
+  #         {{_title}}
+  #       fields:
+  #         _title:
+  #           label: Title
+  #           type: text
+  #           width: 1/2
+  #         _length:
+  #           label: Length
+  #           type: text
+  #           width: 1/2
   links:
     label: Links
     type: builder

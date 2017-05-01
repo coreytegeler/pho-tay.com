@@ -18,7 +18,7 @@ project.importSVG root+'/assets/img/logo.svg', (logo) ->
 	logo.position = logoPoint
 	logo.fillColor = 'white'
 	logo.blendMode = 'difference'
-	$wrapper.addClass('loa')
+	$(paper.view.element).addClass('loaded')
 
 $wrapper.scroll (e) ->
 	scrollTop = $(this).scrollTop()

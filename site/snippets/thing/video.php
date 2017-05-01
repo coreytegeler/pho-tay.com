@@ -1,13 +1,15 @@
 <?php
-$parity = ( $index % 2 == 0 ? 'even' : 'odd' );
 if( $image = $video->still() ) {
 	if( $image = $video->image( $image ) ) {
 		$image = $image->resize(800, 800, 100);
 	}
 }
 $title = $video->title();
+$slug = $video->slug();
 $type = $video->type();
+$date = $video->date( 'm.d.y' );
 $about = $video->about();
+$embed = $video->embed();
 if( $image ) {
 	$width = $image->width();
 	$height = $image->height();
@@ -15,18 +17,25 @@ if( $image ) {
 	$width = null;
 	$height = null;
 }
-echo '<article class="thing ' . $parity . ( $type == 'video' ? ' large' : '' ) . '" data-type="video">';
+
+echo '<div class="thing large full video" data-type="video" data-slug="' . $slug . '">';
 	echo '<div class="display ' . ( $image ? 'image' : 'text' ) . '" data-width="' . $width . '" data-height="' . $height . '">';
 		echo '<a href="#" class="hover show open">';
 			if( $image ) {
 				echo '<img src="' . $image->url() .  '"/>';
 			} else {
 				echo '<h3>' . $title . '</h3>';
-				if( $date = $video->date( 'm.d.y' ) ) {
+				if( $date ) {
 					echo '<h4>' . $date . '</h4>';
+				}
+				if( !$type->empty() ) {
+					echo '<h4 class="type">' . str_replace( '_', ' ', $type ) . '</h4>';
 				}
 			}
 		echo '</a>';
+		if( !$embed->empty() ) {
+			echo '<div class="embed video"></div>';
+		}
 	echo '</div>';
 	echo '<div class="info">';
 		echo '<div class="center">';
@@ -35,13 +44,20 @@ echo '<article class="thing ' . $parity . ( $type == 'video' ? ' large' : '' ) .
 			echo '</div>';
 			echo '<div class="meta">';
 				echo '<div class="row">';
-					if( $date = $video->date( 'm.d.y' ) ) {
+					if( $date ) {
 						echo '<span class="date">' . $date . '</span>';
+					}
+					if( !$type->empty() ) {
+						echo '<span class="type">' . str_replace( '_', ' ', $type ) . '</span>';
 					}
 				echo '</div>';
 			echo '</div>';
-			snippet( 'info/video', array( 'video' => $video ) );
+			echo '<div class="more">';
+				echo '<div class="inner">';
+					//credits
+				echo '</div>';
+			echo '</div>';		
 		echo '</div>';
 	echo '</div>';
-echo '</article>';
+echo '</div>';
 ?>
